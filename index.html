@@ -1,0 +1,2448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professor Spark's AI Adventure — Lesson 14: RNNs & Sequence Patterns</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js for 3D Cinematic Time Tunnel, Pixi Robot & RNN Memory Core -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Google Fonts: Fredoka & Space Grotesk for Kid-Friendly Sci-Fi Appeal -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --neon-cyan: #00f5d4;
+            --neon-purple: #9b5de5;
+            --neon-pink: #f15bb5;
+            --neon-yellow: #fee440;
+            --neon-blue: #00bbf9;
+        }
+
+        body {
+            font-family: 'Fredoka', system-ui, -apple-system, sans-serif;
+            background-color: #060919;
+            color: #ffffff;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        .font-tech {
+            font-family: 'Space Grotesk', monospace, sans-serif;
+        }
+
+        /* Fullscreen 3D Canvas behind UI */
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: auto;
+        }
+
+        /* Glassmorphism Sci-Fi Cards */
+        .cyber-panel {
+            background: rgba(12, 18, 44, 0.86);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 2px solid rgba(0, 245, 212, 0.38);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65), inset 0 0 20px rgba(0, 245, 212, 0.1);
+            border-radius: 1.5rem;
+        }
+
+        .cyber-panel-purple {
+            background: rgba(24, 14, 48, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 2px solid rgba(155, 93, 229, 0.55);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65), inset 0 0 25px rgba(155, 93, 229, 0.15);
+            border-radius: 1.5rem;
+        }
+
+        /* Arcade 3D Buttons */
+        .btn-arcade {
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 5px 0 rgba(0, 0, 0, 0.45), 0 0 14px rgba(0, 245, 212, 0.25);
+            cursor: pointer;
+        }
+        .btn-arcade:hover:not(:disabled) {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 0 rgba(0, 0, 0, 0.45), 0 0 24px rgba(0, 245, 212, 0.55);
+        }
+        .btn-arcade:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.45);
+        }
+
+        /* Animated Glowing Pulse */
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(0, 245, 212, 0.4); }
+            50% { box-shadow: 0 0 32px rgba(241, 91, 181, 0.9); }
+        }
+        .glow-pulse {
+            animation: pulseGlow 2.2s infinite ease-in-out;
+        }
+
+        /* Speaking Portrait Ring Animation */
+        @keyframes talkingWave {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 245, 212, 0.7), 0 0 25px rgba(254, 228, 64, 0.85); }
+            50% { transform: scale(1.07); box-shadow: 0 0 0 10px rgba(0, 245, 212, 0), 0 0 35px rgba(241, 91, 181, 0.95); }
+        }
+        .talking-avatar {
+            animation: talkingWave 0.65s infinite ease-in-out !important;
+            border-color: #fee440 !important;
+        }
+
+        /* Floating Avatar Animation */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        .float-avatar {
+            animation: floatSlow 3.2s infinite ease-in-out;
+        }
+
+        /* Storybook Watercolor Portrait Frame */
+        .portrait-frame {
+            background: #fceeb5;
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Memory Loop SVG Animation */
+        @keyframes dashFlow {
+            to {
+                stroke-dashoffset: -40;
+            }
+        }
+        .animated-path {
+            stroke-dasharray: 8 6;
+            animation: dashFlow 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative selection:bg-cyan-400 selection:text-slate-950">
+
+    <!-- MASTER SVG DEFINITIONS: GUARANTEED ZERO-FAILURE INLINE PORTRAITS -->
+    <svg width="0" height="0" class="hidden" aria-hidden="true">
+        <defs>
+            <!-- PROFESSOR SPARK: 50s American Professor, parted silver-grey hair, grey mustache, dark rounded rectangular glasses, green shirt + olive V-neck vest + cream lab coat -->
+            <g id="character-spark">
+                <rect width="120" height="120" fill="#fceeb5"/>
+                <!-- Soft warm paper vignette -->
+                <circle cx="60" cy="60" r="56" fill="#f9e398" opacity="0.45"/>
+                <!-- Cream Lab Coat Shoulders -->
+                <path d="M14 120 L23 80 Q60 72 97 80 L106 120 Z" fill="#f7f2df" stroke="#786648" stroke-width="2.4"/>
+                <!-- Olive-Green V-Neck Sweater Vest -->
+                <path d="M39 81 L60 120 L81 81 Z" fill="#9eb36d" stroke="#5e6e3b" stroke-width="2"/>
+                <!-- Green Collared Shirt & Button -->
+                <path d="M45 77 L60 100 L75 77 Z" fill="#7fa368" stroke="#4e693d" stroke-width="2"/>
+                <circle cx="60" cy="91" r="1.8" fill="#4e693d"/>
+                <!-- Lab Coat Lapels & Pocket -->
+                <path d="M39 80 L28 118 M81 80 L92 118" stroke="#786648" stroke-width="2.2" fill="none"/>
+                <rect x="74" y="102" width="14" height="4" rx="1" fill="#efe7cc" stroke="#786648" stroke-width="1.3"/>
+                <!-- Neck -->
+                <rect x="50" y="65" width="20" height="16" rx="6" fill="#e8ae66"/>
+                <!-- Ears -->
+                <ellipse cx="29" cy="52" rx="6" ry="9.5" fill="#e8ae66" stroke="#785634" stroke-width="2"/>
+                <ellipse cx="91" cy="52" rx="6" ry="9.5" fill="#e8ae66" stroke="#785634" stroke-width="2"/>
+                <!-- Warm Face -->
+                <rect x="31" y="21" width="58" height="53" rx="25" fill="#f2bd74" stroke="#785634" stroke-width="2.3"/>
+                <!-- Neatly Parted Silver-Grey Hair -->
+                <path d="M28 47 Q24 16 58 13 Q93 15 92 47 Q88 29 73 25 Q52 20 35 32 Z" fill="#a8a598" stroke="#5e5a4d" stroke-width="2.2"/>
+                <!-- Gentle Forehead Wrinkles & Silver Eyebrows -->
+                <path d="M44 30 Q60 28 76 30" stroke="#b58342" stroke-width="1.4" fill="none"/>
+                <path d="M39 36 Q46 33 53 36" stroke="#858276" stroke-width="3.4" stroke-linecap="round" fill="none"/>
+                <path d="M67 36 Q74 33 81 36" stroke="#858276" stroke-width="3.4" stroke-linecap="round" fill="none"/>
+                <!-- Dark-Rimmed Rounded Rectangular Glasses -->
+                <rect x="35" y="39" width="21" height="15.5" rx="5.5" fill="#fff9e6" fill-opacity="0.38" stroke="#423020" stroke-width="3"/>
+                <rect x="64" y="39" width="21" height="15.5" rx="5.5" fill="#fff9e6" fill-opacity="0.38" stroke="#423020" stroke-width="3"/>
+                <line x1="56" y1="45.5" x2="64" y2="45.5" stroke="#423020" stroke-width="3"/>
+                <line x1="29" y1="44.5" x2="35" y2="45.5" stroke="#423020" stroke-width="2.5"/>
+                <line x1="85" y1="45.5" x2="91" y2="44.5" stroke="#423020" stroke-width="2.5"/>
+                <!-- Friendly Eyes -->
+                <ellipse cx="45.5" cy="47" rx="2.7" ry="4" fill="#362415"/>
+                <ellipse cx="74.5" cy="47" rx="2.7" ry="4" fill="#362415"/>
+                <circle cx="46.5" cy="45.5" r="1.1" fill="#ffffff"/>
+                <circle cx="75.5" cy="45.5" r="1.1" fill="#ffffff"/>
+                <!-- Rounded Nose -->
+                <path d="M57 48 Q53 56 60 57 Q66 56 63 48" fill="#e3a659" stroke="#785634" stroke-width="1.9"/>
+                <!-- Full Silver-Grey Mustache -->
+                <path d="M43 63 Q51 56 60 59.5 Q69 56 77 63 Q74 66.5 60 65 Q46 66.5 43 63 Z" fill="#a8a598" stroke="#5e5a4d" stroke-width="2"/>
+                <!-- Warm Smile -->
+                <path d="M52 68.5 Q60 71.5 68 68.5" stroke="#785634" stroke-width="2" stroke-linecap="round" fill="none"/>
+            </g>
+
+            <!-- LUNA: 10-year-old American girl, chin-length dark brown bobbed hair with bangs, big warm brown eyes, open happy smile, coral-orange crew-neck t-shirt -->
+            <g id="character-luna">
+                <rect width="120" height="120" fill="#fceeb5"/>
+                <circle cx="60" cy="60" r="56" fill="#f9e398" opacity="0.45"/>
+                <!-- Back of Dark Brown Bobbed Hair -->
+                <path d="M21 50 Q16 77 29 85 L91 85 Q104 77 99 50 Z" fill="#59412c" stroke="#362415" stroke-width="2.3"/>
+                <!-- Coral-Orange Crew-Neck T-Shirt -->
+                <path d="M21 120 L29 85 Q60 79 91 85 L99 120 Z" fill="#f08243" stroke="#8c421a" stroke-width="2.3"/>
+                <path d="M44 84 Q60 95 76 84" fill="none" stroke="#c96228" stroke-width="3.2"/>
+                <!-- Neck -->
+                <rect x="52" y="70" width="16" height="16" rx="6" fill="#f5c480"/>
+                <!-- Warm Face -->
+                <rect x="32" y="25" width="56" height="51" rx="25" fill="#fbd192" stroke="#785634" stroke-width="2.2"/>
+                <!-- Rosy Cheeks -->
+                <ellipse cx="41" cy="57" rx="5.5" ry="3.2" fill="#f29b76" opacity="0.65"/>
+                <ellipse cx="79" cy="57" rx="5.5" ry="3.2" fill="#f29b76" opacity="0.65"/>
+                <!-- Big Expressive Brown Eyes -->
+                <ellipse cx="46" cy="49" rx="5.4" ry="7" fill="#ffffff" stroke="#362415" stroke-width="1.9"/>
+                <ellipse cx="74" cy="49" rx="5.4" ry="7" fill="#ffffff" stroke="#362415" stroke-width="1.9"/>
+                <ellipse cx="46" cy="49.5" rx="3.7" ry="5.2" fill="#47301d"/>
+                <ellipse cx="74" cy="49.5" rx="3.7" ry="5.2" fill="#47301d"/>
+                <circle cx="47.5" cy="47.2" r="1.6" fill="#ffffff"/>
+                <circle cx="75.5" cy="47.2" r="1.6" fill="#ffffff"/>
+                <!-- Arched Eyebrows -->
+                <path d="M39 38.5 Q46 35.5 52 38.5" stroke="#362415" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+                <path d="M68 38.5 Q74 35.5 81 38.5" stroke="#362415" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+                <!-- Cute Nose -->
+                <path d="M60 52 Q62.5 55 59 56.2" stroke="#785634" stroke-width="1.9" stroke-linecap="round" fill="none"/>
+                <!-- Cheerful Open Smile -->
+                <path d="M48.5 60.5 Q60 62 71.5 60.5 Q69.5 71.5 60 71.5 Q50.5 71.5 48.5 60.5 Z" fill="#e67e51" stroke="#785634" stroke-width="2"/>
+                <!-- Chin-Length Dark Brown Bobbed Hair & Bangs -->
+                <path d="M23 58 Q21 19 60 17 Q99 19 97 58 Q93 39 86 34 L82 43 L76 31 L67 42 L61 29 L52 42 L44 32 L37 43 L33 35 Q27 43 23 58 Z" fill="#59412c" stroke="#362415" stroke-width="2.3"/>
+            </g>
+
+            <!-- PIXI: Cute teal-blue robot, rounded rectangular head, curved top antenna with bulb, dark teal face screen, two oval eyes, chest plate & waving right hand -->
+            <g id="character-pixi">
+                <rect width="120" height="120" fill="#fceeb5"/>
+                <circle cx="60" cy="60" r="56" fill="#f9e398" opacity="0.45"/>
+                <!-- Curved Top Antenna & Round Bulb -->
+                <path d="M60 27 Q63 16 55 13" stroke="#4a8f96" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+                <circle cx="52.5" cy="12.5" r="6.8" fill="#72bfc7" stroke="#28585e" stroke-width="2.3"/>
+                <circle cx="50.5" cy="10.5" r="2" fill="#c2f4f8"/>
+                <!-- Waving Right Arm & Hand -->
+                <path d="M36 84 Q19 77 17 60" stroke="#5aa5ad" stroke-width="8.5" stroke-linecap="round" fill="none"/>
+                <circle cx="17" cy="56" r="7" fill="#72bfc7" stroke="#28585e" stroke-width="2.2"/>
+                <!-- Left Arm -->
+                <path d="M84 84 Q96 93 95 109" stroke="#5aa5ad" stroke-width="8.5" stroke-linecap="round" fill="none"/>
+                <!-- Torso & Rectangular Chest Plate -->
+                <rect x="36" y="75" width="48" height="39" rx="11" fill="#6ab5bd" stroke="#28585e" stroke-width="2.5"/>
+                <rect x="46" y="83" width="28" height="15" rx="4.5" fill="#88d2d9" stroke="#28585e" stroke-width="2"/>
+                <!-- Neck Ring -->
+                <rect x="50" y="69" width="20" height="8" rx="3.5" fill="#4a8f96" stroke="#28585e" stroke-width="2.2"/>
+                <!-- Rounded Rectangular Teal Robot Head -->
+                <rect x="23" y="26" width="74" height="46" rx="22" fill="#72bfc7" stroke="#28585e" stroke-width="2.6"/>
+                <!-- Side Ear Sensors -->
+                <ellipse cx="23" cy="49" rx="3.2" ry="7.5" fill="#4a8f96" stroke="#28585e" stroke-width="2"/>
+                <ellipse cx="97" cy="49" rx="3.2" ry="7.5" fill="#4a8f96" stroke="#28585e" stroke-width="2"/>
+                <!-- Dark Teal Inner Face Screen -->
+                <rect x="32" y="33.5" width="56" height="31.5" rx="14" fill="#3a7880" stroke="#22494d" stroke-width="2.2"/>
+                <!-- Large Glowing Light-Teal Oval Eyes -->
+                <ellipse cx="47" cy="46.5" rx="6.8" ry="8" fill="#aef0f5" stroke="#22494d" stroke-width="2"/>
+                <ellipse cx="73" cy="46.5" rx="6.8" ry="8" fill="#aef0f5" stroke="#22494d" stroke-width="2"/>
+                <ellipse cx="47" cy="46.5" rx="3" ry="4.2" fill="#22494d"/>
+                <ellipse cx="73" cy="46.5" rx="3" ry="4.2" fill="#22494d"/>
+                <!-- Happy Robot Smile -->
+                <path d="M52.5 57.5 Q60 62.5 67.5 57.5" stroke="#1b3e42" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+            </g>
+        </defs>
+    </svg>
+
+    <!-- 3D Interactive Canvas: The Time Tunnel of Patterns -->
+    <canvas id="three-canvas"></canvas>
+
+    <!-- TOP NAVIGATION & MISSION HUD -->
+    <header class="relative z-20 w-full px-3 pt-3 pb-2">
+        <div class="max-w-7xl mx-auto cyber-panel px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+            <!-- Brand & Workshop Title + Mini Portraits -->
+            <div class="flex items-center gap-3">
+                <div class="flex -space-x-2">
+                    <div class="w-10 h-10 rounded-xl portrait-frame border-2 border-amber-300" title="Professor Spark">
+                        <svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-spark"/></svg>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl portrait-frame border-2 border-pink-300" title="Luna">
+                        <svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-luna"/></svg>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl portrait-frame border-2 border-cyan-300" title="Pixi">
+                        <svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-pixi"/></svg>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-tech uppercase tracking-widest px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/40">Mastix ED • Lesson 14</span>
+                        <span class="text-xs text-amber-300 hidden sm:inline"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>3D Interactive Audio Lab</span>
+                    </div>
+                    <h1 class="text-base sm:text-xl font-bold tracking-wide bg-gradient-to-r from-cyan-300 via-white to-pink-300 bg-clip-text text-transparent">
+                        Professor Spark's RNN Memory Workshop
+                    </h1>
+                </div>
+            </div>
+
+            <!-- 6-Stage Navigation Pills -->
+            <nav id="stage-nav" class="flex items-center gap-1.5 overflow-x-auto py-1 max-w-full">
+                <button type="button" onclick="goToStage(0)" id="nav-btn-0" class="stage-pill px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-cyan-400 text-slate-950 shadow-md">
+                    <span>1. 🚀 Time Tunnel</span>
+                </button>
+                <button type="button" onclick="goToStage(1)" id="nav-btn-1" class="stage-pill px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-slate-800/80 text-slate-300 hover:bg-slate-700">
+                    <span>2. 🧠 Sequence Detective</span>
+                </button>
+                <button type="button" onclick="goToStage(2)" id="nav-btn-2" class="stage-pill px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-slate-800/80 text-slate-300 hover:bg-slate-700">
+                    <span>3. 💻 AI Memory Machine</span>
+                </button>
+                <button type="button" onclick="goToStage(3)" id="nav-btn-3" class="stage-pill px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-slate-800/80 text-slate-300 hover:bg-slate-700">
+                    <span>4. 🔍 Spot Challenge</span>
+                </button>
+                <button type="button" onclick="goToStage(4)" id="nav-btn-4" class="stage-pill px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-slate-800/80 text-slate-300 hover:bg-slate-700">
+                    <span>5. 🎨 AI App Inventor</span>
+                </button>
+                <button type="button" onclick="goToStage(5)" id="nav-btn-5" class="stage-pill px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-slate-800/80 text-slate-300 hover:bg-slate-700">
+                    <span>6. 🏆 Finale Diploma</span>
+                </button>
+            </nav>
+
+            <!-- Score & Audio Controls -->
+            <div class="flex items-center gap-2">
+                <!-- Spark Stars Counter -->
+                <div class="px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-400/50 flex items-center gap-2">
+                    <span class="text-lg animate-bounce">⭐</span>
+                    <div class="leading-tight">
+                        <div class="text-[10px] uppercase tracking-wider text-amber-200">Spark Stars</div>
+                        <div id="star-score" class="text-sm font-bold text-amber-300">0</div>
+                    </div>
+                </div>
+
+                <!-- Voice Cast & Settings Button -->
+                <button type="button" onclick="toggleVoiceModal()" title="Audition Character Voices" class="px-3 py-2 rounded-xl bg-amber-500/30 hover:bg-amber-500/50 border border-amber-400/50 text-xs font-semibold flex items-center gap-1.5 transition text-amber-200">
+                    <i class="fa-solid fa-microphone-lines text-amber-300"></i>
+                    <span class="hidden md:inline">Voice Cast</span>
+                </button>
+
+                <!-- Voice TTS Toggle -->
+                <button type="button" id="btn-tts" onclick="toggleTTS()" title="Toggle Character Voice Narration" class="px-3 py-2 rounded-xl bg-purple-600/40 hover:bg-purple-600/70 border border-purple-400/50 text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i id="tts-icon" class="fa-solid fa-volume-high text-cyan-300"></i>
+                    <span id="tts-label" class="hidden md:inline">Voice ON</span>
+                </button>
+
+                <!-- SFX Toggle -->
+                <button type="button" id="btn-sfx" onclick="toggleSFX()" title="Toggle Synth Sound Effects" class="px-3 py-2 rounded-xl bg-cyan-600/40 hover:bg-cyan-600/70 border border-cyan-400/50 text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i id="sfx-icon" class="fa-solid fa-music text-amber-300"></i>
+                    <span id="sfx-label" class="hidden md:inline">SFX ON</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CHARACTER DIALOGUE & PROFESSOR SPARK'S SPOKEN INSTRUCTIONS BAR -->
+    <section class="relative z-20 max-w-7xl w-full mx-auto px-3 mt-1">
+        <div class="cyber-panel-purple p-3 sm:p-4 flex flex-col lg:flex-row items-center justify-between gap-4">
+            <!-- Character Illustrated Portrait + Speech Bubble -->
+            <div class="flex items-center gap-3.5 w-full lg:w-auto">
+                <div id="speaker-avatar" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl portrait-frame shrink-0 float-avatar transition-all">
+                    <svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-spark"/></svg>
+                </div>
+                <div class="flex-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="speaker-name" class="text-sm sm:text-base font-bold text-amber-300">Professor Spark</span>
+                        <span id="speaker-role" class="text-[11px] px-2 py-0.5 rounded-full bg-white/10 text-cyan-200">50s American AI Professor (Instructions)</span>
+                        <button type="button" onclick="replayCurrentSpeech()" class="text-xs px-2.5 py-0.5 rounded-lg bg-cyan-500/30 hover:bg-cyan-500/50 text-cyan-100 border border-cyan-400/40 transition font-semibold">
+                            <i class="fa-solid fa-volume-high mr-1"></i>Replay Voice
+                        </button>
+                        <button type="button" onclick="speakStageInstructions()" class="text-xs px-2.5 py-0.5 rounded-lg bg-amber-400/30 hover:bg-amber-400/50 text-amber-200 border border-amber-400/50 transition font-semibold">
+                            <i class="fa-solid fa-chalkboard-user mr-1"></i>Hear Professor Spark's Instructions
+                        </button>
+                    </div>
+                    <p id="speaker-text" class="text-sm sm:text-base text-slate-100 mt-1 leading-snug">
+                        "Welcome to the Time Tunnel of Patterns! Some AI systems don't just look at one piece of information—they remember what happened before!"
+                    </p>
+                </div>
+            </div>
+
+            <!-- 3D Scene Quick Interactive Controls -->
+            <div class="flex flex-wrap items-center gap-2 shrink-0 self-end lg:self-center">
+                <button type="button" onclick="speakStageInstructions()" class="btn-arcade px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 text-xs font-bold flex items-center gap-1.5">
+                    <i class="fa-solid fa-bullhorn"></i> Activity Instructions
+                </button>
+                <button type="button" onclick="pulse3DMemoryCore(true)" class="btn-arcade px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-xs font-bold text-white flex items-center gap-1.5">
+                    <i class="fa-solid fa-bolt"></i> Pulse 3D RNN Core
+                </button>
+                <button type="button" onclick="makePixiDance(true)" class="btn-arcade px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 text-xs font-bold flex items-center gap-1.5">
+                    <span>🤖</span> Wave to Pixi
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- VOICE CAST AUDITION & VOICE SETTINGS MODAL -->
+    <div id="voice-modal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="cyber-panel max-w-2xl w-full p-5 sm:p-6 border-2 border-cyan-400">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-microphone-lines text-xl text-amber-300"></i>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">American Voice Cast Studio (Lesson 14)</h3>
+                </div>
+                <button type="button" onclick="toggleVoiceModal()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-rose-500 text-white font-bold">✕</button>
+            </div>
+
+            <p class="text-xs sm:text-sm text-slate-300 mt-3">
+                Click any character below to test their custom American English voice profile! All game and activity instructions are spoken using <strong>Professor Spark's</strong> voice.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+                <!-- Professor Spark Audition -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border-2 border-amber-400/60 flex flex-col items-center text-center">
+                    <div class="w-24 h-24 rounded-2xl portrait-frame mb-2">
+                        <svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-spark"/></svg>
+                    </div>
+                    <div class="font-bold text-amber-300 text-sm">Professor Spark</div>
+                    <div class="text-[11px] text-cyan-200">50s American Male Professor</div>
+                    <p class="text-[11px] text-slate-300 mt-1">Warm baritone voice (`pitch: 0.82`). Narrates all activity instructions!</p>
+                    <button type="button" onclick="characterSpeak('spark', 'Hello there, young scientist! I am Professor Spark. I will guide you through our Recurrent Neural Network adventure and explain all the instructions!')" class="btn-arcade mt-3 w-full py-1.5 rounded-xl bg-amber-400 text-slate-950 font-bold text-xs">
+                        🔊 Test Spark's Voice
+                    </button>
+                </div>
+
+                <!-- Luna Audition -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border-2 border-pink-400/60 flex flex-col items-center text-center">
+                    <div class="w-24 h-24 rounded-2xl portrait-frame mb-2">
+                        <svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-luna"/></svg>
+                    </div>
+                    <div class="font-bold text-pink-300 text-sm">Luna</div>
+                    <div class="text-[11px] text-cyan-200">10-Year-Old American Girl</div>
+                    <p class="text-[11px] text-slate-300 mt-1">Cheerful young girl voice (`pitch: 1.45`) who loves weather & music patterns!</p>
+                    <button type="button" onclick="characterSpeak('luna', 'Hi! I am Luna, and I am ten years old! I love discovering how AI predicts tomorrow’s weather and finishes sentences!')" class="btn-arcade mt-3 w-full py-1.5 rounded-xl bg-pink-400 text-slate-950 font-bold text-xs">
+                        🔊 Test Luna's Voice
+                    </button>
+                </div>
+
+                <!-- Pixi Audition -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border-2 border-cyan-400/60 flex flex-col items-center text-center">
+                    <div class="w-24 h-24 rounded-2xl portrait-frame mb-2">
+                        <svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-pixi"/></svg>
+                    </div>
+                    <div class="font-bold text-cyan-300 text-sm">Pixi the Robot</div>
+                    <div class="text-[11px] text-cyan-200">10-Year-Old Boy Robot Voice</div>
+                    <p class="text-[11px] text-slate-300 mt-1">Youthful boy voice (`pitch: 1.30`) with real-time Web Audio robot vocoder bleeps!</p>
+                    <button type="button" onclick="characterSpeak('pixi', 'Bleep bloop! Hi friend! I am Pixi! My antenna flashes whenever my robot memory spots a cool sequence pattern!')" class="btn-arcade mt-3 w-full py-1.5 rounded-xl bg-cyan-400 text-slate-950 font-bold text-xs">
+                        🔊 Test Pixi's Robot Voice
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-4 p-3 rounded-xl bg-slate-900/80 border border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="text-slate-300"><i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i>Tuned to American English (<code class="text-cyan-300">en-US</code>) with custom age & robotic synth modulation.</span>
+                <button type="button" onclick="toggleVoiceModal()" class="btn-arcade px-4 py-1.5 rounded-xl bg-emerald-400 text-slate-950 font-bold">Close Studio</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN STAGE CONTENT CONTAINER -->
+    <main class="relative z-20 flex-1 max-w-7xl w-full mx-auto px-3 py-3 flex flex-col justify-center">
+
+        <!-- =================================================================== -->
+        <!-- STAGE 0: STORY INTRO — THE TIME TUNNEL & HOW RNN MEMORY WORKS        -->
+        <!-- =================================================================== -->
+        <div id="stage-0" class="stage-panel grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+            <!-- Left Column: Story Cards with Professor Spark, Luna & Pixi -->
+            <div class="lg:col-span-7 cyber-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-xs font-bold">
+                            <span>🚀 PART 1 • THE TIME TUNNEL OF PATTERNS</span>
+                        </div>
+                        <button type="button" onclick="speakCustomInstruction('Welcome to Stage 1, The Time Tunnel of Patterns! First, click on my portrait, Pixi, or Luna below to hear how we discover sequence patterns. Then, look at the diagram on the right and click the Feed A, Feed B, and Feed C buttons to watch how an R N N stores previous information inside its glowing memory loop!')" class="btn-arcade px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-volume-high"></i> 👨‍🔬 Hear Professor Spark's Instructions
+                        </button>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white leading-tight">
+                        How Does AI Remember What Happened <span class="text-cyan-400 underline decoration-wavy decoration-pink-500">Before</span>?
+                    </h2>
+                    <p class="text-slate-300 text-sm sm:text-base mt-2">
+                        Click on each hero below to hear their voice and discover how <strong class="text-amber-300">Recurrent Neural Networks (RNNs)</strong> work like a time-traveling detective!
+                    </p>
+
+                    <!-- Interactive Character Dialogue Cards with Hardcoded Inline SVG Portraits -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+                        <button type="button" onclick="characterSpeak('spark', 'Some AI systems do not just look at one piece of information. They remember what happened before! Today we will become Sequence Detectives and teach AI how to remember patterns.')" class="text-left p-3.5 rounded-2xl bg-slate-900/85 hover:bg-slate-800 border-2 border-amber-400/60 transition group">
+                            <div class="flex items-center justify-between">
+                                <div class="w-16 h-16 rounded-xl portrait-frame group-hover:scale-105 transition">
+                                    <svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-spark"/></svg>
+                                </div>
+                                <span class="text-xs px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 font-semibold"><i class="fa-solid fa-volume-high mr-1"></i>50s Prof</span>
+                            </div>
+                            <div class="font-bold text-amber-300 mt-2 text-sm">Professor Spark</div>
+                            <p class="text-xs text-slate-300 mt-1">"Unlike ordinary AI, RNNs have a <strong>Memory Loop</strong> that remembers past steps!"</p>
+                        </button>
+
+                        <button type="button" onclick="characterSpeak('pixi', 'Bleep bloop! My antenna flashes when I spot a pattern! Just like remembering previous words in a sentence so you can guess what word comes next!')" class="text-left p-3.5 rounded-2xl bg-slate-900/85 hover:bg-slate-800 border-2 border-cyan-400/60 transition group">
+                            <div class="flex items-center justify-between">
+                                <div class="w-16 h-16 rounded-xl portrait-frame group-hover:scale-105 transition">
+                                    <svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-pixi"/></svg>
+                                </div>
+                                <span class="text-xs px-2 py-0.5 rounded-full bg-cyan-400/20 text-cyan-300 font-semibold"><i class="fa-solid fa-robot mr-1"></i>10yo Boy Bot</span>
+                            </div>
+                            <div class="font-bold text-cyan-300 mt-2 text-sm">Pixi the Robot</div>
+                            <p class="text-xs text-slate-300 mt-1">"Just like remembering previous words in a sentence: <em>'I love eating...'</em> 🍕"</p>
+                        </button>
+
+                        <button type="button" onclick="characterSpeak('luna', 'Or predicting tomorrow’s weather from previous days! Music notes, traffic cars, and stories are all Sequence Data!')" class="text-left p-3.5 rounded-2xl bg-slate-900/85 hover:bg-slate-800 border-2 border-pink-400/60 transition group">
+                            <div class="flex items-center justify-between">
+                                <div class="w-16 h-16 rounded-xl portrait-frame group-hover:scale-105 transition">
+                                    <svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-luna"/></svg>
+                                </div>
+                                <span class="text-xs px-2 py-0.5 rounded-full bg-pink-400/20 text-pink-300 font-semibold"><i class="fa-solid fa-child-dress mr-1"></i>10yo Girl</span>
+                            </div>
+                            <div class="font-bold text-pink-300 mt-2 text-sm">Luna</div>
+                            <p class="text-xs text-slate-300 mt-1">"Or predicting tomorrow's weather from previous days: 20°, 22°, 24° ➔ 26°!"</p>
+                        </button>
+                    </div>
+
+                    <!-- Ordinary AI vs RNN Comparison Box -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                        <div class="p-3 rounded-2xl bg-rose-950/40 border border-rose-400/30">
+                            <div class="text-xs font-bold uppercase text-rose-300">❌ Ordinary AI (No Memory)</div>
+                            <p class="text-xs text-slate-300 mt-1">Looks at only <strong>1 single piece of info</strong> and forgets it right away—like a goldfish!</p>
+                        </div>
+                        <div class="p-3 rounded-2xl bg-emerald-950/40 border border-emerald-400/40">
+                            <div class="text-xs font-bold uppercase text-emerald-300">✅ RNN AI (Looping Memory!)</div>
+                            <p class="text-xs text-slate-300 mt-1">Saves <strong>Previous Information</strong> inside a glowing memory loop to predict what comes next!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/10">
+                    <div class="text-xs text-cyan-200">
+                        <i class="fa-solid fa-circle-info mr-1"></i> Feed letters into the RNN Memory Loop on the right!
+                    </div>
+                    <button type="button" onclick="goToStage(1)" class="btn-arcade px-5 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-bold text-sm flex items-center gap-2">
+                        <span>Start Game 1: Sequence Detective</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column: Interactive RNN Memory Loop Simulator -->
+            <div class="lg:col-span-5 cyber-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-tech uppercase tracking-wider text-pink-300">⚡ Interactive RNN Diagram</span>
+                        <span class="text-xs px-2.5 py-0.5 rounded-full bg-purple-500/30 border border-purple-400/40 text-purple-200">Click Buttons Below!</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mt-1">How the RNN Memory Loop Works</h3>
+                    <p class="text-xs text-slate-300">Professor Spark asks: <em>"What comes after A, B, C?"</em> Watch how <strong>Previous Information</strong> loops inside Memory!</p>
+
+                    <!-- Visual SVG Diagram of Input -> Memory (with Previous Info Loop) -> Output -->
+                    <div class="my-3 p-3 rounded-2xl bg-slate-950/90 border border-cyan-500/30 relative">
+                        <svg viewBox="0 0 420 175" class="w-full h-auto">
+                            <line x1="85" y1="70" x2="165" y2="70" stroke="#00bbf9" stroke-width="4" class="animated-path" />
+                            <line x1="255" y1="70" x2="335" y2="70" stroke="#00f5d4" stroke-width="4" class="animated-path" />
+                            <path d="M 210 110 C 275 168, 145 168, 210 110" fill="none" stroke="#f15bb5" stroke-width="4" class="animated-path" />
+
+                            <!-- Input Node -->
+                            <rect x="15" y="40" width="75" height="60" rx="14" fill="#0f172a" stroke="#00bbf9" stroke-width="3" />
+                            <text x="52" y="64" text-anchor="middle" fill="#7dd3fc" font-size="11" font-weight="bold">INPUT</text>
+                            <text id="svg-input-val" x="52" y="86" text-anchor="middle" fill="#ffffff" font-size="18" font-weight="bold">A</text>
+
+                            <!-- Memory Core Node -->
+                            <circle id="svg-memory-circle" cx="210" cy="70" r="42" fill="#2e1065" stroke="#f15bb5" stroke-width="4" />
+                            <text x="210" y="64" text-anchor="middle" fill="#f9a8d4" font-size="11" font-weight="bold">MEMORY</text>
+                            <text id="svg-memory-val" x="210" y="84" text-anchor="middle" fill="#fde047" font-size="13" font-weight="bold">[ A ]</text>
+
+                            <!-- Previous Info Label -->
+                            <rect x="135" y="138" width="150" height="26" rx="8" fill="#3b0764" stroke="#f15bb5" stroke-width="1.5" />
+                            <text x="210" y="155" text-anchor="middle" fill="#fbcfe8" font-size="11" font-weight="bold">🔄 Previous Information</text>
+
+                            <!-- Output Node -->
+                            <rect x="330" y="40" width="75" height="60" rx="14" fill="#0f172a" stroke="#00f5d4" stroke-width="3" />
+                            <text x="367" y="64" text-anchor="middle" fill="#6ee7b7" font-size="11" font-weight="bold">OUTPUT</text>
+                            <text id="svg-output-val" x="367" y="86" text-anchor="middle" fill="#fde047" font-size="18" font-weight="bold">B!</text>
+                        </svg>
+                    </div>
+
+                    <!-- Interactive Demo Buttons -->
+                    <div class="space-y-2">
+                        <div class="text-xs font-semibold text-cyan-200">Click in order to feed the sequence into Memory:</div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" onclick="feedIntroDemo('A', 'A', 'B!', 'Step 1: We feed letter A. Memory stores A and predicts B!')" class="btn-arcade py-2 px-2 rounded-xl bg-blue-600/80 hover:bg-blue-500 text-xs font-bold">
+                                1️⃣ Feed "A"
+                            </button>
+                            <button type="button" onclick="feedIntroDemo('B', 'A ➔ B', 'C!', 'Step 2: We feed B. Memory remembers A then B, and predicts C!')" class="btn-arcade py-2 px-2 rounded-xl bg-purple-600/80 hover:bg-purple-500 text-xs font-bold">
+                                2️⃣ Feed "B"
+                            </button>
+                            <button type="button" onclick="feedIntroDemo('C', 'A ➔ B ➔ C', 'D!', 'Step 3: We feed C! Because the R N N remembered A, B, C, it shouts: D comes next!')" class="btn-arcade py-2 px-2 rounded-xl bg-pink-600/80 hover:bg-pink-500 text-xs font-bold">
+                                3️⃣ Feed "C"
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status readout -->
+                <div id="intro-demo-log" class="mt-3 p-3 rounded-xl bg-cyan-950/60 border border-cyan-400/40 text-xs text-cyan-100">
+                    💡 <strong>Professor Spark:</strong> "What comes after A, B, C? <strong>D!</strong> You remembered previous letters—that's exactly what an RNN does!"
+                </div>
+            </div>
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- STAGE 1: GAME 1 — SEQUENCE DETECTIVE + DESIGN CHALLENGE 1           -->
+        <!-- =================================================================== -->
+        <div id="stage-1" class="stage-panel hidden grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+            <!-- Left 8 Cols: Active Sequence Detective Arcade Game -->
+            <div class="lg:col-span-8 cyber-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <span class="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-bold">
+                            🕵️‍♀️ GAME 1 • SEQUENCE DETECTIVE CHALLENGE
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="speakDetectiveInstruction()" class="btn-arcade px-3 py-1 rounded-xl bg-amber-400 text-slate-950 text-xs font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-volume-high"></i> 👨‍🔬 Hear Professor Spark's Instructions
+                            </button>
+                            <div class="flex items-center gap-1.5 text-xs">
+                                <span class="text-slate-300">Puzzle:</span>
+                                <span id="detective-progress" class="font-bold text-cyan-300 px-2.5 py-0.5 rounded-lg bg-slate-800">1 / 8</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 id="detective-title" class="text-xl sm:text-2xl font-bold text-white">
+                        Mystery Sequence #1: Pet Pattern!
+                    </h2>
+                    <p id="detective-subtitle" class="text-xs sm:text-sm text-slate-300 mt-1">
+                        Look at the items stored in the RNN Memory Train below. What comes next in the sequence?
+                    </p>
+
+                    <!-- 3D-Styled Sequence Train Display -->
+                    <div id="sequence-train" class="my-4 p-4 rounded-2xl bg-slate-950/90 border-2 border-cyan-400/40 flex flex-wrap items-center justify-center gap-2 sm:gap-3 min-h-[100px]">
+                        <!-- Populated dynamically by JS -->
+                    </div>
+
+                    <!-- Answer Option Buttons -->
+                    <div class="mt-2">
+                        <div class="text-xs uppercase tracking-wider text-cyan-300 mb-2 font-bold">👇 Choose the Next Item in the Pattern:</div>
+                        <div id="detective-options" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <!-- Populated dynamically by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Feedback Banner -->
+                    <div id="detective-feedback" class="hidden mt-4 p-3.5 rounded-2xl border text-sm font-semibold flex items-center justify-between gap-3">
+                        <span id="detective-feedback-text"></span>
+                        <button type="button" id="btn-next-puzzle" onclick="nextDetectivePuzzle()" class="btn-arcade px-4 py-2 rounded-xl bg-amber-400 text-slate-950 font-bold text-xs shrink-0">
+                            Next Pattern <i class="fa-solid fa-forward ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bottom Bar -->
+                <div class="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
+                    <div class="text-xs text-slate-300">
+                        🧠 <strong>RNN Memory Trace:</strong> <span id="rnn-memory-trace" class="text-amber-300 font-mono">Waiting for input...</span>
+                    </div>
+                    <button type="button" onclick="goToStage(2)" class="btn-arcade px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold">
+                        Next: AI Memory Machine <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right 4 Cols: Luna's Sequence Data Guide + Design Challenge 1 -->
+            <div class="lg:col-span-4 cyber-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl portrait-frame shrink-0">
+                            <svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-luna"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-pink-300">Luna's Sequence Data Guide</h3>
+                            <p class="text-xs text-slate-300">Click any card to hear 10-year-old Luna explain it!</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-2 mt-3">
+                        <button type="button" onclick="characterSpeak('luna', 'Text is a sequence! When you type I love eating, your phone remembers those words and predicts pizza or ice cream!')" class="p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/10 text-left flex items-center justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-cyan-300">💬 Text & Sentences</div>
+                                <div class="text-xs text-slate-300">"I love eating ___" ➔ 🍕 Pizza</div>
+                            </div>
+                            <i class="fa-solid fa-volume-high text-xs text-cyan-400"></i>
+                        </button>
+
+                        <button type="button" onclick="characterSpeak('luna', 'Weather changes in a sequence over days! 20 degrees, 22 degrees, 24 degrees helps AI predict 26 degrees tomorrow!')" class="p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/10 text-left flex items-center justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-amber-300">🌦️ Weather History</div>
+                                <div class="text-xs text-slate-300">20° ➔ 22° ➔ 24° ➔ 26°</div>
+                            </div>
+                            <i class="fa-solid fa-volume-high text-xs text-amber-400"></i>
+                        </button>
+
+                        <button type="button" onclick="characterSpeak('luna', 'Music is a sequence of notes in a song! Do, Re, Mi, Fa, So!')" class="p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/10 text-left flex items-center justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-pink-300">🎵 Music & 🗣️ Speech</div>
+                                <div class="text-xs text-slate-300">Notes in a song & spoken words</div>
+                            </div>
+                            <i class="fa-solid fa-volume-high text-xs text-pink-400"></i>
+                        </button>
+
+                        <button type="button" onclick="characterSpeak('luna', 'Daily stock prices and cars flowing through traffic all happen in time order!')" class="p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/10 text-left flex items-center justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-emerald-300">🚗 Traffic & 📈 Stock Prices</div>
+                                <div class="text-xs text-slate-300">Daily changes & cars all day</div>
+                            </div>
+                            <i class="fa-solid fa-volume-high text-xs text-emerald-400"></i>
+                        </button>
+                    </div>
+
+                    <!-- Mini Design Challenge 1: Sequence Finder -->
+                    <div class="mt-3 p-3 rounded-2xl bg-indigo-950/70 border border-indigo-400/40">
+                        <div class="text-xs font-bold text-amber-300">🎨 Design Challenge 1: Sequence Finder</div>
+                        <p class="text-[11px] text-slate-300 mt-0.5">Click a quick invention idea to hear Professor Spark explain it:</p>
+                        <div class="flex flex-wrap gap-1.5 mt-2">
+                            <button type="button" onclick="characterSpeak('spark', 'Smart Weather Predictor! It studies past weather history to predict tomorrow’s weather for families!')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-cyan-400 hover:text-slate-950 text-[11px] font-semibold border border-cyan-400/30">🌦️ Weather</button>
+                            <button type="button" onclick="characterSpeak('spark', 'Homework Reminder App! It studies student study habits to predict when reminders are needed for students!')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-cyan-400 hover:text-slate-950 text-[11px] font-semibold border border-cyan-400/30">📚 Homework</button>
+                            <button type="button" onclick="characterSpeak('spark', 'Smart Traffic Predictor! It studies traffic data to predict busy roads for drivers!')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-cyan-400 hover:text-slate-950 text-[11px] font-semibold border border-cyan-400/30">🚗 Traffic</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- STAGE 2: PART 2 — MEET THE AI MEMORY MACHINE (TENSORFLOW LITE LAB)  -->
+        <!-- =================================================================== -->
+        <div id="stage-2" class="stage-panel hidden grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+            <!-- Left 7 Cols: 4-Step TensorFlow Lite Interactive Builder -->
+            <div class="lg:col-span-7 cyber-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold">
+                            <span>💻 PART 2 • TENSORFLOW LITE RNN CODING LAB</span>
+                        </div>
+                        <button type="button" onclick="speakCustomInstruction('Here are your instructions for the AI Memory Machine! In Step 1, click Load Sequences to feed 1, 2, 3 and 2, 3, 4 into TensorFlow Lite. In Step 2, click Snap R N N Blocks so Input flows into Memory and then Prediction. In Step 3, click Train AI Brain to practice 100 times. Finally, in Step 4 on the right, click any number sequence to watch your trained R N N predict what comes next!')" class="btn-arcade px-3 py-1 rounded-xl bg-amber-400 text-slate-950 text-xs font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-volume-high"></i> 👨‍🔬 Hear Professor Spark's Instructions
+                        </button>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">
+                        Meet the AI Memory Machine!
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-300">
+                        Complete Steps 1, 2, and 3 below to build and train your tiny RNN—then test live predictions on the right!
+                    </p>
+
+                    <!-- 3 Interactive Build Steps Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+                        <!-- STEP 1 -->
+                        <div id="tf-card-1" class="p-3.5 rounded-2xl bg-slate-900/90 border-2 border-cyan-400 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold text-cyan-300 uppercase">Step 1</span>
+                                    <span id="step1-badge" class="text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-200">Ready</span>
+                                </div>
+                                <div class="font-bold text-sm mt-1">📊 Prepare Data</div>
+                                <div class="mt-2 space-y-1 font-mono text-xs text-slate-300 bg-slate-950 p-2 rounded-xl border border-white/10">
+                                    <div>1, 2, 3 ➔ <span class="text-amber-300 font-bold">4</span></div>
+                                    <div>2, 3, 4 ➔ <span class="text-amber-300 font-bold">5</span></div>
+                                    <div>3, 4, 5 ➔ <span class="text-amber-300 font-bold">6</span></div>
+                                </div>
+                            </div>
+                            <button type="button" id="btn-tf-step1" onclick="completeTFStep1()" class="btn-arcade mt-3 w-full py-2 rounded-xl bg-cyan-400 text-slate-950 font-bold text-xs">
+                                📥 Load Sequences
+                            </button>
+                        </div>
+
+                        <!-- STEP 2 -->
+                        <div id="tf-card-2" class="p-3.5 rounded-2xl bg-slate-900/60 border-2 border-slate-700 flex flex-col justify-between opacity-75">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold text-purple-300 uppercase">Step 2</span>
+                                    <span id="step2-badge" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Locked</span>
+                                </div>
+                                <div class="font-bold text-sm mt-1">🧠 Build RNN Brain</div>
+                                <div class="mt-2 text-center text-xs space-y-1 bg-slate-950 p-2 rounded-xl border border-white/10">
+                                    <div class="text-cyan-300">Input Layer</div>
+                                    <div class="text-pink-400 font-bold">⬇ 🔄 Memory ⬇</div>
+                                    <div class="text-emerald-300">Prediction</div>
+                                </div>
+                            </div>
+                            <button type="button" id="btn-tf-step2" onclick="completeTFStep2()" disabled class="btn-arcade mt-3 w-full py-2 rounded-xl bg-purple-500 text-white font-bold text-xs disabled:opacity-40">
+                                🔧 Snap RNN Blocks
+                            </button>
+                        </div>
+
+                        <!-- STEP 3 -->
+                        <div id="tf-card-3" class="p-3.5 rounded-2xl bg-slate-900/60 border-2 border-slate-700 flex flex-col justify-between opacity-75">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold text-amber-300 uppercase">Step 3</span>
+                                    <span id="step3-badge" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Locked</span>
+                                </div>
+                                <div class="font-bold text-sm mt-1">⚡ Train the Model</div>
+                                <p class="text-[11px] text-slate-300 mt-1">Show examples again & again until AI learns!</p>
+                                <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden mt-2 border border-white/10">
+                                    <div id="train-progress-bar" class="h-full bg-gradient-to-r from-amber-400 to-emerald-400 w-0 transition-all duration-300"></div>
+                                </div>
+                                <div id="train-percent" class="text-[11px] text-right text-amber-300 mt-0.5 font-mono">0% Trained</div>
+                            </div>
+                            <button type="button" id="btn-tf-step3" onclick="completeTFStep3()" disabled class="btn-arcade mt-2 w-full py-2 rounded-xl bg-amber-400 text-slate-950 font-bold text-xs disabled:opacity-40">
+                                🚀 Train AI Brain
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Kid-Friendly TensorFlow Lite Code Preview -->
+                    <div class="mt-4 p-3 rounded-2xl bg-slate-950/90 border border-cyan-500/30 font-mono text-xs">
+                        <div class="flex items-center justify-between text-[11px] text-slate-400 pb-1.5 mb-1.5 border-b border-white/10">
+                            <span>🐍 tensorflow_lite_rnn.py (Visual Kid Mode)</span>
+                            <span id="code-status" class="text-cyan-300">Waiting for Step 1...</span>
+                        </div>
+                        <div class="space-y-1 text-slate-200 leading-relaxed">
+                            <div id="code-line-1" class="opacity-40"><span class="text-pink-400">sequences</span> = [[1,2,3], [2,3,4], [3,4,5]] <span class="text-slate-500"># Step 1: Sequence Data</span></div>
+                            <div id="code-line-2" class="opacity-40"><span class="text-cyan-400">model</span> = tf.Sequential([ <span class="text-amber-300">SimpleRNN(memory=8)</span>, Dense(1) ]) <span class="text-slate-500"># Step 2</span></div>
+                            <div id="code-line-3" class="opacity-40"><span class="text-cyan-400">model</span>.fit(sequences, targets, epochs=<span class="text-emerald-300">100</span>) <span class="text-slate-500"># Step 3: Practice!</span></div>
+                            <div id="code-line-4" class="opacity-40"><span class="text-emerald-400">prediction</span> = model.predict([8, 9, 10]) <span class="text-slate-500"># Step 4: Predicts 11!</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                    <span class="text-xs text-slate-300">👨‍🔬 <strong>Professor Spark:</strong> "Training means showing examples again and again!"</span>
+                    <button type="button" onclick="goToStage(3)" class="btn-arcade px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-bold text-xs">
+                        Next: Spot the Challenge <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right 5 Cols: Step 4 Live Prediction Console & Tricky Sequence -->
+            <div class="lg:col-span-5 cyber-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-300">🎯 Step 4 • Live Prediction Tester</span>
+                        <span id="machine-online-pill" class="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/30 text-amber-200 border border-amber-400/40">Ready to Test!</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mt-1">Test Your RNN Memory Machine</h3>
+                    <p class="text-xs text-slate-300">Click any sequence from the lesson plan (or enter your own 3 numbers!) to see what the AI predicts next.</p>
+
+                    <!-- Preset Sequence Buttons from Lesson Plan -->
+                    <div class="grid grid-cols-2 gap-2 mt-3">
+                        <button type="button" onclick="runMachinePrediction([8, 9, 10], '11', 'Exact Match! +1 Rule: 8, 9, 10 predicts 11! Everybody cheers!')" class="btn-arcade p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/40 text-left">
+                            <div class="text-[11px] text-cyan-300 font-bold">Lesson Test #1</div>
+                            <div class="text-sm font-mono font-bold text-white">8, 9, 10 ➔ ?</div>
+                        </button>
+                        <button type="button" onclick="runMachinePrediction([10, 20, 30], '40', 'Counting by 10s! 10, 20, 30 predicts 40!')" class="btn-arcade p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/40 text-left">
+                            <div class="text-[11px] text-cyan-300 font-bold">Lesson Test #2</div>
+                            <div class="text-sm font-mono font-bold text-white">10, 20, 30 ➔ ?</div>
+                        </button>
+                        <button type="button" onclick="runMachinePrediction([2, 4, 6, 8], '10', 'Even Numbers! 2, 4, 6, 8 predicts 10!')" class="btn-arcade p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/40 text-left">
+                            <div class="text-[11px] text-purple-300 font-bold">Activity 2A</div>
+                            <div class="text-sm font-mono font-bold text-white">2, 4, 6, 8 ➔ ?</div>
+                        </button>
+                        <button type="button" onclick="runMachinePrediction([5, 10, 15, 20], '25', 'High Five Pattern! 5, 10, 15, 20 predicts 25!')" class="btn-arcade p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/40 text-left">
+                            <div class="text-[11px] text-purple-300 font-bold">Activity 2B</div>
+                            <div class="text-sm font-mono font-bold text-white">5, 10, 15, 20 ➔ ?</div>
+                        </button>
+                    </div>
+
+                    <!-- TRICKY SEQUENCE SPECIAL BUTTON (Part 3 Lesson Highlight) -->
+                    <div class="mt-3">
+                        <button type="button" onclick="runTrickySequence()" class="btn-arcade w-full p-3 rounded-2xl bg-gradient-to-r from-amber-500/30 via-pink-500/30 to-purple-600/30 border-2 border-amber-400/70 text-left flex items-center justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-amber-300">🎲 Try the "Tricky Doubling Sequence"!</div>
+                                <div class="text-sm font-mono font-bold text-white">2 ➔ 4 ➔ 8 ➔ 16 ➔ ?</div>
+                                <div class="text-[11px] text-slate-200">Why do humans say <strong>32</strong>, but AI says <strong>31.8</strong>?</div>
+                            </div>
+                            <span class="px-3 py-1.5 rounded-xl bg-amber-400 text-slate-950 font-bold text-xs">Test AI!</span>
+                        </button>
+                    </div>
+
+                    <!-- Custom 3-Number Sequence Input -->
+                    <div class="mt-3 p-3 rounded-2xl bg-slate-900/90 border border-white/10">
+                        <div class="text-xs font-bold text-cyan-200 mb-2">✨ Or Enter Your Own 3-Number Pattern:</div>
+                        <div class="flex items-center gap-2">
+                            <input id="custom-n1" type="number" value="100" class="w-16 p-1.5 rounded-lg bg-slate-950 border border-cyan-400/50 text-center font-mono text-sm text-white">
+                            <span class="text-slate-400">➔</span>
+                            <input id="custom-n2" type="number" value="200" class="w-16 p-1.5 rounded-lg bg-slate-950 border border-cyan-400/50 text-center font-mono text-sm text-white">
+                            <span class="text-slate-400">➔</span>
+                            <input id="custom-n3" type="number" value="300" class="w-16 p-1.5 rounded-lg bg-slate-950 border border-cyan-400/50 text-center font-mono text-sm text-white">
+                            <button type="button" onclick="predictCustomNumbers()" class="btn-arcade flex-1 py-2 px-3 rounded-xl bg-emerald-400 text-slate-950 font-bold text-xs">
+                                Predict!
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Giant Hologram Output Display -->
+                <div class="mt-3 p-4 rounded-2xl bg-slate-950 border-2 border-emerald-400/50 flex items-center justify-between">
+                    <div>
+                        <div class="text-xs uppercase text-slate-400">RNN Prediction Output</div>
+                        <div id="machine-explanation" class="text-xs text-emerald-300 mt-0.5">Click any test sequence above to run your RNN!</div>
+                    </div>
+                    <div id="machine-big-output" class="text-3xl sm:text-4xl font-tech font-bold text-amber-300 px-4 py-1 rounded-xl bg-amber-500/10 border border-amber-400/30">
+                        11
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- STAGE 3: PART 3 — SPOT THE CHALLENGE! (PREDICTION ANALYSIS GAME)    -->
+        <!-- =================================================================== -->
+        <div id="stage-3" class="stage-panel hidden grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+            <!-- Left 7 Cols: Interactive Scenario Diagnosis Game -->
+            <div class="lg:col-span-7 cyber-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                        <span class="px-3 py-1 rounded-full bg-pink-500/20 border border-pink-400/40 text-pink-300 text-xs font-bold">
+                            🔍 PART 3 • WHY PREDICTIONS CAN BE TRICKY
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="speakChallengeInstruction()" class="btn-arcade px-3 py-1 rounded-xl bg-amber-400 text-slate-950 text-xs font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-volume-high"></i> 👨‍🔬 Hear Professor Spark's Instructions
+                            </button>
+                            <span id="challenge-progress" class="text-xs font-bold text-cyan-300 px-2.5 py-1 rounded-lg bg-slate-800">Scenario 1 / 4</span>
+                        </div>
+                    </div>
+
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">
+                        Spot the AI Prediction Challenge!
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-300">
+                        Even smart RNNs sometimes face tricky situations! Read the mystery below and pick which of the <strong>4 Challenges</strong> caused the hiccup.
+                    </p>
+
+                    <!-- Scenario Display Card -->
+                    <div class="my-4 p-5 rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border-2 border-pink-400/50 text-center">
+                        <div id="challenge-emoji" class="text-5xl mb-2">⛈️</div>
+                        <div id="challenge-scenario-title" class="text-lg sm:text-xl font-bold text-amber-300">
+                            Mystery #1: A Storm Appears Suddenly!
+                        </div>
+                        <p id="challenge-scenario-desc" class="text-sm text-slate-200 mt-1 max-w-xl mx-auto">
+                            The weather was sunny and warm (22°, 23°, 24°, 25°), so the AI predicted 26°—but suddenly a surprise thunderstorm rolled in! Why did the AI's prediction fail?
+                        </p>
+                    </div>
+
+                    <!-- 4 Challenge Choice Buttons -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button type="button" onclick="checkChallengeAnswer('Changing Pattern')" class="btn-arcade p-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 border-2 border-amber-400/50 text-left flex items-center gap-3">
+                            <span class="text-3xl">🎭</span>
+                            <div>
+                                <div class="font-bold text-sm text-amber-300">Changing Patterns</div>
+                                <div class="text-xs text-slate-300">The pattern suddenly switched rules!</div>
+                            </div>
+                        </button>
+
+                        <button type="button" onclick="checkChallengeAnswer('Long Memory')" class="btn-arcade p-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 border-2 border-purple-400/50 text-left flex items-center gap-3">
+                            <span class="text-3xl">🧠</span>
+                            <div>
+                                <div class="font-bold text-sm text-purple-300">Long Memories</div>
+                                <div class="text-xs text-slate-300">Clue was way too far back in time!</div>
+                            </div>
+                        </button>
+
+                        <button type="button" onclick="checkChallengeAnswer('Limited Data')" class="btn-arcade p-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 border-2 border-cyan-400/50 text-left flex items-center gap-3">
+                            <span class="text-3xl">📉</span>
+                            <div>
+                                <div class="font-bold text-sm text-cyan-300">Limited Data</div>
+                                <div class="text-xs text-slate-300">Too few examples to learn properly!</div>
+                            </div>
+                        </button>
+
+                        <button type="button" onclick="checkChallengeAnswer('Random Event')" class="btn-arcade p-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 border-2 border-emerald-400/50 text-left flex items-center gap-3">
+                            <span class="text-3xl">🎲</span>
+                            <div>
+                                <div class="font-bold text-sm text-emerald-300">Random Events</div>
+                                <div class="text-xs text-slate-300">A total surprise nobody could foresee!</div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Feedback Box -->
+                    <div id="challenge-feedback" class="hidden mt-4 p-3.5 rounded-2xl border text-sm font-semibold flex items-center justify-between gap-3">
+                        <span id="challenge-feedback-text"></span>
+                        <button type="button" onclick="nextChallengeScenario()" class="btn-arcade px-4 py-2 rounded-xl bg-amber-400 text-slate-950 font-bold text-xs shrink-0">
+                            Next Mystery <i class="fa-solid fa-forward ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                    <span class="text-xs text-slate-300">🤖 <strong>Pixi:</strong> "AI predicts based on probability, not 100% magic certainty!"</span>
+                    <button type="button" onclick="goToStage(4)" class="btn-arcade px-4 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold text-xs">
+                        Next: AI App Inventor Studio <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right 5 Cols: Pixi's 4 RNN Challenges Reference Guide -->
+            <div class="lg:col-span-5 cyber-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl portrait-frame shrink-0">
+                            <svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-pixi"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-cyan-300">Pixi's Field Guide to AI Hiccups</h3>
+                            <p class="text-xs text-slate-300">Click any card to hear Pixi's boy-robot voice explain it!</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2.5 mt-3">
+                        <button type="button" onclick="characterSpeak('pixi', 'Challenge 1 is Changing Patterns! Like when sunny weather suddenly turns into a thunderstorm!')" class="w-full text-left p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-amber-400/30 transition">
+                            <div class="text-xs font-bold text-amber-300 flex items-center justify-between">
+                                <span>1. 🎭 Changing Patterns</span>
+                                <i class="fa-solid fa-volume-high"></i>
+                            </div>
+                            <p class="text-xs text-slate-300 mt-0.5"><strong>Example:</strong> Sunny weather suddenly turning into a storm. When the pattern changes fast, old clues don't match!</p>
+                        </button>
+
+                        <button type="button" onclick="characterSpeak('pixi', 'Challenge 2 is Long Memories! Standard R N Ns can forget clues from many days ago or way back on page one of a long book!')" class="w-full text-left p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-purple-400/30 transition">
+                            <div class="text-xs font-bold text-purple-300 flex items-center justify-between">
+                                <span>2. 🧠 Long Memories</span>
+                                <i class="fa-solid fa-volume-high"></i>
+                            </div>
+                            <p class="text-xs text-slate-300 mt-0.5"><strong>Example:</strong> Long story text or information from many days ago. Standard RNNs can slowly forget very old clues!</p>
+                        </button>
+
+                        <button type="button" onclick="characterSpeak('pixi', 'Challenge 3 is Limited Data! If we only give the AI 3 days of weather data, it does not have enough examples to learn!')" class="w-full text-left p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-cyan-400/30 transition">
+                            <div class="text-xs font-bold text-cyan-300 flex items-center justify-between">
+                                <span>3. 📉 Limited Data</span>
+                                <i class="fa-solid fa-volume-high"></i>
+                            </div>
+                            <p class="text-xs text-slate-300 mt-0.5"><strong>Example:</strong> Only 3 days of weather information. If AI hasn't seen enough examples, it can't spot the real rule.</p>
+                        </button>
+
+                        <button type="button" onclick="characterSpeak('pixi', 'Challenge 4 is Random Events! Like an unexpected traffic accident that nobody could predict from past sequences!')" class="w-full text-left p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-emerald-400/30 transition">
+                            <div class="text-xs font-bold text-emerald-300 flex items-center justify-between">
+                                <span>4. 🎲 Random Events</span>
+                                <i class="fa-solid fa-volume-high"></i>
+                            </div>
+                            <p class="text-xs text-slate-300 mt-0.5"><strong>Example:</strong> Unexpected traffic accidents blocking a road. Random surprises don't follow a past sequence!</p>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-3 p-3 rounded-xl bg-cyan-950/60 border border-cyan-400/40 text-xs text-cyan-200">
+                    💡 <strong>Fun Fact:</strong> To solve the <em>Long Memory</em> challenge, scientists invented special RNN upgrades called <strong>LSTMs</strong> (Long Short-Term Memory)!
+                </div>
+            </div>
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- STAGE 4: DESIGN CHALLENGES 1, 2 & GRAND DESIGN MISSION STUDIO       -->
+        <!-- =================================================================== -->
+        <div id="stage-4" class="stage-panel hidden grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+            <!-- Left 7 Cols: Interactive AI App Inventor Blueprint Builder -->
+            <div class="lg:col-span-7 cyber-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-bold">
+                            <span>🎨 GRAND DESIGN MISSION • TEAM LUNA & PIXI INNOVATION LAB</span>
+                        </div>
+                        <button type="button" onclick="speakCustomInstruction('Now it is time for your Grand Design Mission! You are an AI Inventor. Pick one of our quick-load app ideas like the Smart School Bus Predictor, or type your own invention into the four boxes below. Tell us what sequence your AI studies, what it predicts next, and who it helps. Then click Launch My 3D App Hologram so I can announce your invention!')" class="btn-arcade px-3 py-1 rounded-xl bg-amber-400 text-slate-950 text-xs font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-volume-high"></i> 👨‍🔬 Hear Professor Spark's Instructions
+                        </button>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">
+                        Become an AI Sequence App Inventor!
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-300">
+                        Click one of the Lesson Blueprints below to auto-fill, or type your own invention to help people in everyday life!
+                    </p>
+
+                    <!-- Quick-Load Preset Templates from the Lesson Plan -->
+                    <div class="mt-3">
+                        <div class="text-xs font-bold text-cyan-300 mb-1.5">⚡ Quick-Load Lesson Ideas (or customize below!):</div>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button type="button" onclick="loadAppPreset('🚌 Smart School Bus Predictor', 'Daily bus GPS & traffic times', 'Exact minute the school bus arrives', 'Students & Parents', 'No one waits outside in the freezing rain!')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-xs font-semibold border border-cyan-400/40 transition">
+                                🚌 School Bus Predictor
+                            </button>
+                            <button type="button" onclick="loadAppPreset('🌦️ School Weather Assistant', 'Past 7 days of temperature & clouds', 'Tomorrow’s recess & sports weather', 'Families & Teachers', 'Helps plan outdoor games and pack umbrellas!')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-xs font-semibold border border-cyan-400/40 transition">
+                                🌦️ Weather Assistant
+                            </button>
+                            <button type="button" onclick="loadAppPreset('📚 Smart Reading & Study Buddy', 'Books read & student study habits each week', 'When a friendly homework reminder is needed', 'Students (Ages 9–17)', 'Encourages reading progress and stress-free tests!')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-xs font-semibold border border-cyan-400/40 transition">
+                                📚 Study & Reading Buddy
+                            </button>
+                            <button type="button" onclick="loadAppPreset('🏥 Hospital Queue Predictor', 'Hourly patient check-in sequences', 'Exact waiting room times', 'Doctors & Patients', 'Helps sick patients get faster care!')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-xs font-semibold border border-cyan-400/40 transition">
+                                🏥 Hospital Queue
+                            </button>
+                            <button type="button" onclick="loadAppPreset('🍎 Healthy Eating Coach', 'Meals & snacks eaten over the week', 'Delicious healthy meal suggestions next', 'Kids & Athletes', 'Gives everyone more energy for sports and school!')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-xs font-semibold border border-cyan-400/40 transition">
+                                🍎 Healthy Eating Coach
+                            </button>
+                            <button type="button" onclick="loadAppPreset('🚗 Smart Traffic Predictor', 'Hourly car flow on city streets', 'Which roads will be busy in 30 minutes', 'Drivers & Buses', 'Stops traffic jams and saves fuel!')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-xs font-semibold border border-cyan-400/40 transition">
+                                🚗 Traffic Predictor
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Form Fields -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3">
+                        <div>
+                            <label class="text-[11px] uppercase font-bold text-amber-300">📱 App Name</label>
+                            <input id="app-name" type="text" oninput="updateLiveBlueprint()" value="🚌 Smart School Bus Predictor" class="w-full mt-1 p-2 rounded-xl bg-slate-950 border border-cyan-400/50 text-xs sm:text-sm text-white">
+                        </div>
+                        <div>
+                            <label class="text-[11px] uppercase font-bold text-cyan-300">📊 Sequence Data Used (What it remembers)</label>
+                            <input id="app-sequence" type="text" oninput="updateLiveBlueprint()" value="Daily bus GPS & traffic times" class="w-full mt-1 p-2 rounded-xl bg-slate-950 border border-cyan-400/50 text-xs sm:text-sm text-white">
+                        </div>
+                        <div>
+                            <label class="text-[11px] uppercase font-bold text-pink-300">🔮 What My AI Predicts Next</label>
+                            <input id="app-prediction" type="text" oninput="updateLiveBlueprint()" value="Exact minute the school bus arrives" class="w-full mt-1 p-2 rounded-xl bg-slate-950 border border-cyan-400/50 text-xs sm:text-sm text-white">
+                        </div>
+                        <div>
+                            <label class="text-[11px] uppercase font-bold text-emerald-300">🧑‍🤝‍🧑 Who Uses It & How It Helps Society</label>
+                            <input id="app-benefit" type="text" oninput="updateLiveBlueprint()" value="Students & Parents — No waiting in the rain!" class="w-full mt-1 p-2 rounded-xl bg-slate-950 border border-cyan-400/50 text-xs sm:text-sm text-white">
+                        </div>
+                    </div>
+
+                    <!-- Homework Sentence Builder -->
+                    <div class="mt-3 p-3 rounded-2xl bg-indigo-950/70 border border-indigo-400/40">
+                        <div class="text-xs font-bold text-amber-300">🌟 Future Predictor Homework Pitch (Auto-Generated!):</div>
+                        <p id="homework-pitch" class="text-xs sm:text-sm text-white mt-1 italic">
+                            "My AI remembers <span class="text-cyan-300 font-bold">Daily bus GPS & traffic times</span> so it can predict <span class="text-pink-300 font-bold">Exact minute the school bus arrives</span> and help <span class="text-emerald-300 font-bold">Students & Parents — No waiting in the rain!</span>"
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
+                    <button type="button" onclick="launch3DAppHologram()" class="btn-arcade px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 via-pink-500 to-purple-600 text-white font-bold text-xs sm:text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-rocket"></i> Launch My 3D App Hologram & Hear Pitch!
+                    </button>
+                    <button type="button" onclick="goToStage(5)" class="btn-arcade px-4 py-2.5 rounded-2xl bg-emerald-400 text-slate-950 font-bold text-xs">
+                        Go to Grand Finale <i class="fa-solid fa-trophy ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right 5 Cols: Live 3D Holographic App Blueprint Preview Card -->
+            <div class="lg:col-span-5 cyber-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-tech uppercase tracking-wider text-cyan-300">✨ Live Holographic App Blueprint</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">RNN Powered</span>
+                    </div>
+
+                    <div id="hologram-card" class="mt-3 p-5 rounded-3xl bg-gradient-to-br from-cyan-950 via-slate-900 to-purple-950 border-2 border-cyan-400 shadow-2xl relative overflow-hidden">
+                        <div class="text-xs font-tech uppercase text-cyan-300 tracking-widest">TEAM LUNA & PIXI INNOVATION LAB</div>
+                        <h3 id="preview-app-name" class="text-2xl font-bold text-white mt-1">🚌 Smart School Bus Predictor</h3>
+
+                        <div class="mt-4 space-y-2.5 text-xs">
+                            <div class="p-2.5 rounded-xl bg-slate-950/80 border border-cyan-400/30">
+                                <div class="text-cyan-300 font-bold uppercase text-[10px]">🔄 Sequence Studied by RNN Memory</div>
+                                <div id="preview-app-seq" class="text-white text-sm font-semibold mt-0.5">Daily bus GPS & traffic times</div>
+                            </div>
+
+                            <div class="p-2.5 rounded-xl bg-slate-950/80 border border-pink-400/30">
+                                <div class="text-pink-300 font-bold uppercase text-[10px]">🔮 Future Prediction Output</div>
+                                <div id="preview-app-pred" class="text-white text-sm font-semibold mt-0.5">Exact minute the school bus arrives</div>
+                            </div>
+
+                            <div class="p-2.5 rounded-xl bg-slate-950/80 border border-emerald-400/30">
+                                <div class="text-emerald-300 font-bold uppercase text-[10px]">🌍 Who Benefits & Societal Impact</div>
+                                <div id="preview-app-ben" class="text-white text-sm font-semibold mt-0.5">Students & Parents — No waiting in the rain!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3 text-center">
+                    <p class="text-xs text-slate-300">
+                        👩‍🚀 <strong>Luna:</strong> "You just designed a real AI solution that uses sequence prediction to help people!"
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- STAGE 5: WORKSHOP FINALE & SEQUENCE DETECTIVE GRADUATION BADGE      -->
+        <!-- =================================================================== -->
+        <div id="stage-5" class="stage-panel hidden grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+            <div class="lg:col-span-7 cyber-panel p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/50 text-amber-300 text-xs font-bold">
+                            <span>🎉 WORKSHOP FINALE • LESSON 14 COMPLETE!</span>
+                        </div>
+                        <button type="button" onclick="speakStageInstructions()" class="btn-arcade px-3 py-1 rounded-xl bg-amber-400 text-slate-950 text-xs font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-volume-high"></i> 👨‍🔬 Hear Professor Spark's Finale Message
+                        </button>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">
+                        Congratulations, Certified Sequence Detective!
+                    </h2>
+                    <p class="text-sm text-cyan-200 mt-1 italic">
+                        "The smartest AI doesn't just see the present—it learns from the past to prepare for the future!" — <strong>Professor Spark</strong> 🚀🤖✨
+                    </p>
+
+                    <!-- Learning Outcomes Interactive Checklist -->
+                    <div class="mt-4">
+                        <div class="text-xs font-bold uppercase tracking-wider text-amber-300 mb-2">🏆 Lesson 14 Learning Outcomes Unlocked:</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <div class="p-2.5 rounded-xl bg-emerald-950/50 border border-emerald-400/40 flex items-center gap-2">
+                                <span class="text-emerald-400 text-base">✅</span>
+                                <span>Explain real-world <strong>Sequence Data</strong> (text, weather, music, traffic)</span>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-emerald-950/50 border border-emerald-400/40 flex items-center gap-2">
+                                <span class="text-emerald-400 text-base">✅</span>
+                                <span>Understand how <strong>RNNs use a Memory Loop</strong> for previous info</span>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-emerald-950/50 border border-emerald-400/40 flex items-center gap-2">
+                                <span class="text-emerald-400 text-base">✅</span>
+                                <span>Build & train a <strong>TensorFlow Lite RNN</strong> model</span>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-emerald-950/50 border border-emerald-400/40 flex items-center gap-2">
+                                <span class="text-emerald-400 text-base">✅</span>
+                                <span>Analyze why AI predicts with <strong>probability (31.8 vs 32)</strong></span>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-emerald-950/50 border border-emerald-400/40 flex items-center gap-2">
+                                <span class="text-emerald-400 text-base">✅</span>
+                                <span>Spot the <strong>4 Challenges</strong> (Changing Patterns, Long Memory, Limited Data, Random Events)</span>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-emerald-950/50 border border-emerald-400/40 flex items-center gap-2">
+                                <span class="text-emerald-400 text-base">✅</span>
+                                <span>Invent practical <strong>AI-powered sequence apps</strong> for society</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+                    <button type="button" onclick="trigger3DFireworks()" class="btn-arcade px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 to-pink-500 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2">
+                        <span>🎆 Celebrate with 3D Tunnel Hyper-Boost!</span>
+                    </button>
+                    <button type="button" onclick="goToStage(0)" class="btn-arcade px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-bold border border-cyan-400/40">
+                        🔄 Replay Adventure
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right 5 Cols: Official Graduation Badge & Certificate -->
+            <div class="lg:col-span-5 cyber-panel p-5 flex flex-col justify-between text-center relative overflow-hidden">
+                <div class="p-5 rounded-3xl bg-gradient-to-b from-amber-500/20 via-purple-900/40 to-slate-950 border-2 border-amber-400 shadow-2xl">
+                    <!-- All Three Heroes on the Diploma -->
+                    <div class="flex items-center justify-center gap-3 mb-2">
+                        <div class="w-14 h-14 rounded-2xl portrait-frame">
+                            <svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-spark"/></svg>
+                        </div>
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-200 flex items-center justify-center text-3xl shadow-lg border-4 border-white">
+                            🏅
+                        </div>
+                        <div class="w-14 h-14 rounded-2xl portrait-frame">
+                            <svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-luna"/></svg>
+                        </div>
+                        <div class="w-14 h-14 rounded-2xl portrait-frame">
+                            <svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-pixi"/></svg>
+                        </div>
+                    </div>
+                    <div class="text-xs font-tech uppercase tracking-widest text-amber-300 mt-2">MASTIX ED • OFFICIAL DIPLOMA</div>
+                    <h3 class="text-2xl font-bold text-white mt-0.5">Master RNN Architect</h3>
+
+                    <div class="my-3 flex items-center justify-center gap-2">
+                        <input id="student-name-input" type="text" placeholder="Type Your Name Here!" value="Future AI Inventor" class="px-3 py-1.5 rounded-xl bg-slate-950/90 border border-amber-400/60 text-center font-bold text-amber-300 text-sm w-56">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-xs my-3">
+                        <div class="p-2 rounded-xl bg-slate-900/80 border border-white/10">
+                            <div class="text-slate-400">Spark Stars Earned</div>
+                            <div id="cert-stars" class="text-lg font-bold text-amber-300">⭐ 0</div>
+                        </div>
+                        <div class="p-2 rounded-xl bg-slate-900/80 border border-white/10">
+                            <div class="text-slate-400">Signature AI App</div>
+                            <div id="cert-app" class="text-xs font-bold text-cyan-300 truncate">🚌 Smart School Bus Predictor</div>
+                        </div>
+                    </div>
+
+                    <p id="cert-pitch-summary" class="text-[11px] text-slate-200 italic bg-slate-950/70 p-2.5 rounded-xl border border-white/10">
+                        "My AI remembers Daily bus GPS & traffic times so it can predict Exact minute the school bus arrives!"
+                    </p>
+                </div>
+
+                <button type="button" onclick="copyCertificateSummary()" class="btn-arcade mt-3 w-full py-2.5 rounded-xl bg-cyan-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-copy"></i> Copy My AI Inventor Diploma & Homework Sentence
+                </button>
+                <div id="copy-toast" class="hidden text-xs text-emerald-300 font-bold mt-1">
+                    ✅ Copied to Clipboard! Ready to share with your teacher!
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- =================================================================== -->
+    <!-- JAVASCRIPT: ZERO-ERROR AUDIO, VOICES, 3D SCENE & ACTIVITIES         -->
+    <!-- =================================================================== -->
+    <script>
+        /***********************************************************************
+         * 1. PORTRAIT HELPER & VOICE STUDIO MODAL
+         ***********************************************************************/
+        function getCharacterSvgMarkup(charKey) {
+            const safeKey = (charKey === 'luna' || charKey === 'pixi') ? charKey : 'spark';
+            return '<svg viewBox="0 0 120 120" class="w-full h-full"><use href="#character-' + safeKey + '"/></svg>';
+        }
+
+        function toggleVoiceModal() {
+            const modal = document.getElementById('voice-modal');
+            if (modal) {
+                modal.classList.toggle('hidden');
+            }
+            playSound('click');
+        }
+
+        /***********************************************************************
+         * 2. AMERICAN CHARACTER VOICE ENGINE & ROBOT VOCODER SYNTH
+         * - Professor Spark: Middle-aged American man in his 50s (en-US male)
+         * - Luna: 10-year-old American girl (en-US child/high female)
+         * - Pixi: 10-year-old American boy robot (en-US boy + Web Audio vocoder)
+         ***********************************************************************/
+        let audioCtx = null;
+        let sfxEnabled = true;
+        let ttsEnabled = true;
+        let currentSpeechText = "Welcome to the Time Tunnel of Patterns! Some AI systems don't just look at one piece of information—they remember what happened before!";
+        let currentSpeakerKey = "spark";
+        let availableVoices = [];
+        let pixiRobotOscInterval = null;
+
+        function loadVoices() {
+            if ('speechSynthesis' in window) {
+                availableVoices = window.speechSynthesis.getVoices() || [];
+            }
+        }
+        if ('speechSynthesis' in window) {
+            loadVoices();
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+        }
+
+        function pickAmericanVoiceFor(charKey) {
+            if (!availableVoices || availableVoices.length === 0) {
+                loadVoices();
+            }
+            const usVoices = availableVoices.filter(function(v) {
+                return v.lang && (v.lang.toLowerCase() === 'en-us' || v.lang.toLowerCase().indexOf('en_us') === 0);
+            });
+            const fallbackEnVoices = availableVoices.filter(function(v) {
+                return v.lang && v.lang.toLowerCase().indexOf('en') === 0;
+            });
+            const pool = usVoices.length > 0 ? usVoices : fallbackEnVoices;
+            if (pool.length === 0) return null;
+
+            if (charKey === 'spark') {
+                const malePriority = ['guy', 'david', 'mark', 'christopher', 'roger', 'eric', 'alex', 'daniel', 'matthew', 'fred', 'google us english'];
+                for (let i = 0; i < malePriority.length; i++) {
+                    const kw = malePriority[i];
+                    const match = pool.find(function(v) { return v.name.toLowerCase().indexOf(kw) !== -1; });
+                    if (match) return match;
+                }
+                return pool[0];
+            } else if (charKey === 'luna') {
+                const girlPriority = ['ana', 'ivy', 'aria', 'jenny', 'zira', 'samantha', 'victoria', 'allison', 'ava', 'susan', 'google us english'];
+                for (let i = 0; i < girlPriority.length; i++) {
+                    const kw = girlPriority[i];
+                    const match = pool.find(function(v) { return v.name.toLowerCase().indexOf(kw) !== -1; });
+                    if (match) return match;
+                }
+                return pool[pool.length - 1];
+            } else if (charKey === 'pixi') {
+                const boyPriority = ['justin', 'kevin', 'ana', 'brandon', 'junior', 'samantha', 'google us english', 'david'];
+                for (let i = 0; i < boyPriority.length; i++) {
+                    const kw = boyPriority[i];
+                    const match = pool.find(function(v) { return v.name.toLowerCase().indexOf(kw) !== -1; });
+                    if (match) return match;
+                }
+                return pool[0];
+            }
+            return pool[0];
+        }
+
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    audioCtx = new AudioContextClass();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function startPixiRobotVoiceLayer() {
+            stopPixiRobotVoiceLayer();
+            if (!sfxEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            pixiRobotOscInterval = setInterval(function() {
+                if (!audioCtx || !window.speechSynthesis || !window.speechSynthesis.speaking) {
+                    stopPixiRobotVoiceLayer();
+                    return;
+                }
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const mod = audioCtx.createOscillator();
+                const modGain = audioCtx.createGain();
+                const mainGain = audioCtx.createGain();
+
+                const boyRobotFreqs = [293.66, 329.63, 392.00, 440.00, 523.25];
+                const f = boyRobotFreqs[Math.floor(Math.random() * boyRobotFreqs.length)];
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(f, now);
+
+                mod.type = 'square';
+                mod.frequency.setValueAtTime(45, now);
+                modGain.gain.setValueAtTime(28, now);
+
+                mainGain.gain.setValueAtTime(0.016, now);
+                mainGain.gain.exponentialRampToValueAtTime(0.001, now + 0.085);
+
+                mod.connect(modGain);
+                modGain.connect(osc.frequency);
+                osc.connect(mainGain);
+                mainGain.connect(audioCtx.destination);
+
+                osc.start(now);
+                mod.start(now);
+                osc.stop(now + 0.085);
+                mod.stop(now + 0.085);
+            }, 115);
+        }
+
+        function stopPixiRobotVoiceLayer() {
+            if (pixiRobotOscInterval) {
+                clearInterval(pixiRobotOscInterval);
+                pixiRobotOscInterval = null;
+            }
+        }
+
+        function playSound(type) {
+            if (!sfxEnabled) return;
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(520, now);
+                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.08);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'success') {
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach(function(freq, idx) {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+                        gain.gain.setValueAtTime(0.15, now + idx * 0.07);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.24);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + idx * 0.07);
+                        osc.stop(now + idx * 0.07 + 0.24);
+                    });
+                } else if (type === 'error') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.linearRampToValueAtTime(140, now + 0.25);
+                    gain.gain.setValueAtTime(0.14, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'pulse') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.35);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'fanfare') {
+                    const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50];
+                    notes.forEach(function(freq, idx) {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                        gain.gain.setValueAtTime(0.18, now + idx * 0.1);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.3);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + idx * 0.1);
+                        osc.stop(now + idx * 0.1 + 0.3);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        const characterProfiles = {
+            spark: {
+                name: "Professor Spark",
+                role: "50s American AI Professor (Instructions)",
+                pitch: 0.82,
+                rate: 0.95
+            },
+            pixi: {
+                name: "Pixi the Robot",
+                role: "10-Year-Old American Boy Robot",
+                pitch: 1.30,
+                rate: 1.05
+            },
+            luna: {
+                name: "Luna",
+                role: "10-Year-Old American Girl Explorer",
+                pitch: 1.45,
+                rate: 1.06
+            }
+        };
+
+        function characterSpeak(charKey, text) {
+            const prof = characterProfiles[charKey] || characterProfiles.spark;
+            currentSpeakerKey = charKey;
+            currentSpeechText = text;
+
+            const avatarEl = document.getElementById('speaker-avatar');
+            if (avatarEl) {
+                avatarEl.innerHTML = getCharacterSvgMarkup(charKey);
+                avatarEl.classList.add('talking-avatar');
+            }
+            const nameEl = document.getElementById('speaker-name');
+            const roleEl = document.getElementById('speaker-role');
+            const textEl = document.getElementById('speaker-text');
+            if (nameEl) nameEl.textContent = prof.name;
+            if (roleEl) roleEl.textContent = prof.role;
+            if (textEl) textEl.textContent = '"' + text + '"';
+
+            playSound('click');
+
+            if (charKey === 'pixi') {
+                makePixiDance(false);
+            }
+
+            if (ttsEnabled && 'speechSynthesis' in window) {
+                try {
+                    window.speechSynthesis.cancel();
+                    stopPixiRobotVoiceLayer();
+
+                    const utter = new SpeechSynthesisUtterance(text);
+                    utter.lang = 'en-US';
+                    const chosenVoice = pickAmericanVoiceFor(charKey);
+                    if (chosenVoice) {
+                        utter.voice = chosenVoice;
+                    }
+                    utter.pitch = prof.pitch;
+                    utter.rate = prof.rate;
+
+                    utter.onstart = function() {
+                        if (avatarEl) avatarEl.classList.add('talking-avatar');
+                        if (charKey === 'pixi') startPixiRobotVoiceLayer();
+                    };
+                    utter.onend = function() {
+                        if (avatarEl) avatarEl.classList.remove('talking-avatar');
+                        stopPixiRobotVoiceLayer();
+                    };
+                    utter.onerror = function() {
+                        if (avatarEl) avatarEl.classList.remove('talking-avatar');
+                        stopPixiRobotVoiceLayer();
+                    };
+
+                    window.speechSynthesis.speak(utter);
+                } catch (e) {}
+            } else {
+                setTimeout(function() {
+                    if (avatarEl) avatarEl.classList.remove('talking-avatar');
+                }, 1400);
+            }
+        }
+
+        function speakCustomInstruction(instructionText) {
+            characterSpeak('spark', instructionText);
+        }
+
+        function speakStageInstructions() {
+            const stageInstructionsBySpark = [
+                "Welcome to Stage 1, The Time Tunnel of Patterns! Here are your instructions: Click on my portrait, Pixi, or Luna to hear how Recurrent Neural Networks remember patterns. Then look at the diagram on the right and click Feed A, Feed B, and Feed C to see how previous information loops inside the AI's memory!",
+                "Welcome to Game 1: Sequence Detective! Look at the sequence of clues inside the Memory Train. Remember what came before, and click one of the four answer buttons below to predict what comes next in the pattern!",
+                "Welcome to Part 2: The AI Memory Machine! Follow the four steps in order: First, click Load Sequences in Step 1. Second, click Snap R N N Blocks in Step 2. Third, click Train AI Brain in Step 3. Fourth, test your trained AI on the right by clicking any number pattern!",
+                "Welcome to Part 3: Spot the Challenge! Read the mystery scenario in the center box to see why the AI's prediction went wrong. Then choose whether it was caused by Changing Patterns, Long Memories, Limited Data, or Random Events!",
+                "Welcome to the Grand Design Mission! Pick one of our preset app blueprints at the top, or type your own AI invention into the four boxes. Then click Launch My 3D App Hologram so I can announce your invention to the world!",
+                "Congratulations on completing Lesson 14! Type your name into your official Master R N N Architect Diploma on the right, and click Celebrate with 3D Tunnel Hyper-Boost!"
+            ];
+            characterSpeak('spark', stageInstructionsBySpark[currentStageIdx] || stageInstructionsBySpark[0]);
+        }
+
+        function speakDetectiveInstruction() {
+            const p = detectivePuzzles[currentPuzzleIdx];
+            characterSpeak('spark', "Sequence Detective Instructions for " + p.title + ". Look at the pattern in the memory train: " + p.sequence.join(", then ") + ". Using what you remember from those steps, click the button below that shows what comes next!");
+        }
+
+        function speakChallengeInstruction() {
+            const c = challengeScenarios[currentChallengeIdx];
+            characterSpeak('spark', "Instructions for " + c.title + ". " + c.desc + " Click one of the four challenge buttons below—Changing Patterns, Long Memories, Limited Data, or Random Events—to solve why the AI struggled!");
+        }
+
+        function replayCurrentSpeech() {
+            characterSpeak(currentSpeakerKey, currentSpeechText);
+        }
+
+        function toggleTTS() {
+            ttsEnabled = !ttsEnabled;
+            const icon = document.getElementById('tts-icon');
+            const label = document.getElementById('tts-label');
+            if (ttsEnabled) {
+                icon.className = "fa-solid fa-volume-high text-cyan-300";
+                label.textContent = "Voice ON";
+                replayCurrentSpeech();
+            } else {
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                stopPixiRobotVoiceLayer();
+                icon.className = "fa-solid fa-volume-xmark text-rose-400";
+                label.textContent = "Voice OFF";
+            }
+        }
+
+        function toggleSFX() {
+            sfxEnabled = !sfxEnabled;
+            const icon = document.getElementById('sfx-icon');
+            const label = document.getElementById('sfx-label');
+            if (sfxEnabled) {
+                icon.className = "fa-solid fa-music text-amber-300";
+                label.textContent = "SFX ON";
+                playSound('success');
+            } else {
+                icon.className = "fa-solid fa-volume-off text-rose-400";
+                label.textContent = "SFX OFF";
+            }
+        }
+
+        /***********************************************************************
+         * 3. STAR SCORE REWARD SYSTEM
+         ***********************************************************************/
+        let sparkStars = 0;
+        function addStars(amount) {
+            sparkStars += amount;
+            const starEl = document.getElementById('star-score');
+            const certStarEl = document.getElementById('cert-stars');
+            if (starEl) starEl.textContent = sparkStars;
+            if (certStarEl) certStarEl.textContent = "⭐ " + sparkStars;
+            pulse3DMemoryCore(false);
+        }
+
+        /***********************************************************************
+         * 4. 3D SCENE (THREE.JS WITH AUTOMATIC 2D CANVAS FALLBACK IF OFFLINE)
+         ***********************************************************************/
+        let scene, camera, renderer;
+        let tunnelRings = [];
+        let rnnCoreGroup, inputSphere, memoryTorus, outputSphere, dataOrb;
+        let pixiGroup, pixiAntennaBulb, pixiRightArm;
+        let tunnelSpeed = 0.18;
+        let corePulseScale = 1.0;
+        let pixiJumpTime = 0;
+        let currentStageIdx = 0;
+        let targetCameraZ = 18;
+        let targetCameraX = 0;
+        let isDragging = false;
+        let prevMouse = { x: 0, y: 0 };
+        let sceneRotationY = 0;
+        let sceneRotationX = 0;
+        let useFallback2D = false;
+
+        function initThreeJS() {
+            const canvas = document.getElementById('three-canvas');
+            if (typeof THREE === 'undefined') {
+                useFallback2D = true;
+                initFallback2DCanvas(canvas);
+                return;
+            }
+
+            try {
+                scene = new THREE.Scene();
+                scene.fog = new THREE.FogExp2(0x060919, 0.018);
+
+                camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
+                camera.position.set(0, 1.5, 18);
+
+                renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+                renderer.setClearColor(0x060919, 1);
+
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+                scene.add(ambientLight);
+
+                const cyanLight = new THREE.PointLight(0x00f5d4, 2.2, 60);
+                cyanLight.position.set(6, 6, 12);
+                scene.add(cyanLight);
+
+                const pinkLight = new THREE.PointLight(0xf15bb5, 2.2, 60);
+                pinkLight.position.set(-6, -4, 10);
+                scene.add(pinkLight);
+
+                // 1. Glowing Time Tunnel Rings
+                const ringColors = [0x00f5d4, 0x9b5de5, 0xf15bb5, 0xfee440, 0x00bbf9];
+                for (let i = 0; i < 24; i++) {
+                    const ringGeo = new THREE.TorusGeometry(9, 0.08, 12, 48);
+                    const ringMat = new THREE.MeshStandardMaterial({
+                        color: ringColors[i % ringColors.length],
+                        emissive: ringColors[i % ringColors.length],
+                        emissiveIntensity: 0.6,
+                        roughness: 0.2
+                    });
+                    const ring = new THREE.Mesh(ringGeo, ringMat);
+                    ring.position.z = -i * 3.5;
+                    ring.rotation.z = i * 0.2;
+                    scene.add(ring);
+                    tunnelRings.push(ring);
+                }
+
+                // 2. 3D RNN Memory Core
+                rnnCoreGroup = new THREE.Group();
+                rnnCoreGroup.position.set(0, 2.2, 5);
+                scene.add(rnnCoreGroup);
+
+                const nodeGeo = new THREE.IcosahedronGeometry(0.75, 1);
+                const inMat = new THREE.MeshStandardMaterial({ color: 0x00bbf9, emissive: 0x00bbf9, emissiveIntensity: 0.5 });
+                inputSphere = new THREE.Mesh(nodeGeo, inMat);
+                inputSphere.position.set(-3.2, 0, 0);
+                rnnCoreGroup.add(inputSphere);
+
+                const memGeo = new THREE.TorusGeometry(1.35, 0.22, 20, 64);
+                const memMat = new THREE.MeshStandardMaterial({ color: 0xf15bb5, emissive: 0xf15bb5, emissiveIntensity: 0.75, roughness: 0.15 });
+                memoryTorus = new THREE.Mesh(memGeo, memMat);
+                rnnCoreGroup.add(memoryTorus);
+
+                const innerCrystalGeo = new THREE.OctahedronGeometry(0.65, 0);
+                const innerCrystalMat = new THREE.MeshStandardMaterial({ color: 0xfee440, emissive: 0xfee440, emissiveIntensity: 0.8 });
+                const innerCrystal = new THREE.Mesh(innerCrystalGeo, innerCrystalMat);
+                memoryTorus.add(innerCrystal);
+
+                const outMat = new THREE.MeshStandardMaterial({ color: 0x00f5d4, emissive: 0x00f5d4, emissiveIntensity: 0.5 });
+                outputSphere = new THREE.Mesh(nodeGeo, outMat);
+                outputSphere.position.set(3.2, 0, 0);
+                rnnCoreGroup.add(outputSphere);
+
+                const orbGeo = new THREE.SphereGeometry(0.28, 16, 16);
+                const orbMat = new THREE.MeshStandardMaterial({ color: 0xfee440, emissive: 0xfee440, emissiveIntensity: 1.0 });
+                dataOrb = new THREE.Mesh(orbGeo, orbMat);
+                rnnCoreGroup.add(dataOrb);
+
+                // 3. 3D Waving Teal Pixi Robot
+                pixiGroup = new THREE.Group();
+                pixiGroup.position.set(5.6, -1.35, 8);
+                scene.add(pixiGroup);
+
+                const tealBodyMat = new THREE.MeshStandardMaterial({ color: 0x6ab5bd, roughness: 0.35, metalness: 0.3 });
+                const darkTealMat = new THREE.MeshStandardMaterial({ color: 0x3a7880, roughness: 0.4, metalness: 0.2 });
+                const glowEyeMat = new THREE.MeshStandardMaterial({ color: 0xaef0f5, emissive: 0x70e5ff, emissiveIntensity: 0.9 });
+
+                const headGeo = new THREE.BoxGeometry(1.45, 1.05, 1.1);
+                const head = new THREE.Mesh(headGeo, tealBodyMat);
+                head.position.set(0, 0.35, 0);
+                pixiGroup.add(head);
+
+                const screenGeo = new THREE.BoxGeometry(1.15, 0.72, 0.08);
+                const screenMesh = new THREE.Mesh(screenGeo, darkTealMat);
+                screenMesh.position.set(0, 0.35, 0.54);
+                pixiGroup.add(screenMesh);
+
+                const eyeGeo = new THREE.SphereGeometry(0.16, 14, 14);
+                const leftEye = new THREE.Mesh(eyeGeo, glowEyeMat);
+                leftEye.scale.set(1, 1.2, 0.5);
+                leftEye.position.set(-0.28, 0.38, 0.59);
+                const rightEye = new THREE.Mesh(eyeGeo, glowEyeMat);
+                rightEye.scale.set(1, 1.2, 0.5);
+                rightEye.position.set(0.28, 0.38, 0.59);
+                pixiGroup.add(leftEye, rightEye);
+
+                const torsoGeo = new THREE.BoxGeometry(1.05, 1.0, 0.8);
+                const torso = new THREE.Mesh(torsoGeo, tealBodyMat);
+                torso.position.set(0, -0.78, 0);
+                pixiGroup.add(torso);
+
+                const chestGeo = new THREE.BoxGeometry(0.6, 0.36, 0.08);
+                const chestPanel = new THREE.Mesh(chestGeo, glowEyeMat);
+                chestPanel.position.set(0, -0.68, 0.41);
+                pixiGroup.add(chestPanel);
+
+                pixiRightArm = new THREE.Group();
+                pixiRightArm.position.set(-0.65, -0.45, 0);
+                const armGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.75);
+                const rArmMesh = new THREE.Mesh(armGeo, tealBodyMat);
+                rArmMesh.position.set(-0.2, 0.3, 0);
+                rArmMesh.rotation.z = 0.55;
+                pixiRightArm.add(rArmMesh);
+                pixiGroup.add(pixiRightArm);
+
+                const lArmMesh = new THREE.Mesh(armGeo, tealBodyMat);
+                lArmMesh.position.set(0.7, -0.75, 0);
+                lArmMesh.rotation.z = -0.25;
+                pixiGroup.add(lArmMesh);
+
+                const stemGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.45);
+                const stem = new THREE.Mesh(stemGeo, darkTealMat);
+                stem.position.set(0, 1.05, 0);
+                stem.rotation.z = 0.2;
+                pixiGroup.add(stem);
+
+                const bulbGeo = new THREE.SphereGeometry(0.2, 16, 16);
+                const bulbMat = new THREE.MeshStandardMaterial({ color: 0x70bac2, emissive: 0x00f5d4, emissiveIntensity: 1.2 });
+                pixiAntennaBulb = new THREE.Mesh(bulbGeo, bulbMat);
+                pixiAntennaBulb.position.set(-0.08, 1.32, 0);
+                pixiGroup.add(pixiAntennaBulb);
+
+                // 4. Starfield Particles
+                const starGeo = new THREE.BufferGeometry();
+                const starCount = 400;
+                const positions = new Float32Array(starCount * 3);
+                for (let i = 0; i < starCount * 3; i += 3) {
+                    positions[i] = (Math.random() - 0.5) * 50;
+                    positions[i + 1] = (Math.random() - 0.5) * 35;
+                    positions[i + 2] = (Math.random() - 0.5) * 80;
+                }
+                starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                const starMat = new THREE.PointsMaterial({ color: 0x00f5d4, size: 0.18, transparent: true, opacity: 0.8 });
+                const starParticles = new THREE.Points(starGeo, starMat);
+                scene.add(starParticles);
+
+                window.addEventListener('mousedown', function(e) {
+                    if (e.target.tagName === 'CANVAS') {
+                        isDragging = true;
+                        prevMouse = { x: e.clientX, y: e.clientY };
+                    }
+                });
+                window.addEventListener('mousemove', function(e) {
+                    if (!isDragging) return;
+                    const dx = e.clientX - prevMouse.x;
+                    const dy = e.clientY - prevMouse.y;
+                    sceneRotationY += dx * 0.005;
+                    sceneRotationX = Math.max(-0.3, Math.min(0.3, sceneRotationX + dy * 0.005));
+                    prevMouse = { x: e.clientX, y: e.clientY };
+                });
+                window.addEventListener('mouseup', function() { isDragging = false; });
+
+                window.addEventListener('resize', function() {
+                    if (!camera || !renderer) return;
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            } catch (err) {
+                useFallback2D = true;
+                initFallback2DCanvas(canvas);
+            }
+        }
+
+        function initFallback2DCanvas(canvas) {
+            const ctx = canvas.getContext('2d');
+            function resize2D() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resize2D();
+            window.addEventListener('resize', resize2D);
+
+            function drawFallbackLoop() {
+                requestAnimationFrame(drawFallbackLoop);
+                const t = performance.now() * 0.001;
+                ctx.fillStyle = '#060919';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const cx = canvas.width / 2;
+                const cy = canvas.height / 2;
+                const colors = ['#00f5d4', '#9b5de5', '#f15bb5', '#fee440', '#00bbf9'];
+                for (let i = 0; i < 14; i++) {
+                    const radius = ((i * 45 + t * 90 * tunnelSpeed * 4) % 650) + 20;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = colors[i % colors.length];
+                    ctx.lineWidth = 2.5;
+                    ctx.globalAlpha = Math.max(0.1, 1 - radius / 650);
+                    ctx.stroke();
+                }
+                ctx.globalAlpha = 1;
+            }
+            drawFallbackLoop();
+        }
+
+        function animateThreeJS() {
+            if (useFallback2D || !renderer || !scene || !camera) return;
+            requestAnimationFrame(animateThreeJS);
+            const time = performance.now() * 0.001;
+
+            tunnelRings.forEach(function(ring, idx) {
+                ring.position.z += tunnelSpeed;
+                ring.rotation.z += 0.005 * (idx % 2 === 0 ? 1 : -1);
+                if (ring.position.z > 18) {
+                    ring.position.z = -65;
+                }
+            });
+
+            tunnelSpeed += (0.16 - tunnelSpeed) * 0.05;
+
+            if (rnnCoreGroup) {
+                rnnCoreGroup.rotation.y = sceneRotationY + Math.sin(time * 0.7) * 0.25;
+                rnnCoreGroup.rotation.x = sceneRotationX;
+
+                memoryTorus.rotation.x = time * 1.4;
+                memoryTorus.rotation.y = time * 1.1;
+                inputSphere.rotation.y = time;
+                outputSphere.rotation.y = -time;
+
+                corePulseScale += (1.0 - corePulseScale) * 0.08;
+                memoryTorus.scale.setScalar(corePulseScale);
+
+                const cycle = (time * 1.5) % 3;
+                if (cycle < 1) {
+                    dataOrb.position.set(-3.2 + cycle * 3.2, Math.sin(cycle * Math.PI) * 0.8, 0);
+                } else if (cycle < 2) {
+                    const angle = (cycle - 1) * Math.PI * 2;
+                    dataOrb.position.set(Math.cos(angle) * 1.35, Math.sin(angle) * 1.35, 0.3);
+                } else {
+                    const t = cycle - 2;
+                    dataOrb.position.set(t * 3.2, Math.sin(t * Math.PI) * 0.8, 0);
+                }
+            }
+
+            if (pixiGroup) {
+                pixiGroup.position.y = -1.35 + Math.sin(time * 2.5) * 0.22 + Math.sin(pixiJumpTime) * 0.8;
+                pixiGroup.rotation.y = -0.35 + Math.sin(time * 1.5) * 0.18;
+                if (pixiRightArm) {
+                    pixiRightArm.rotation.z = Math.sin(time * 5.5) * 0.35;
+                }
+                if (pixiJumpTime > 0) {
+                    pixiJumpTime = Math.max(0, pixiJumpTime - 0.15);
+                }
+                if (pixiAntennaBulb) {
+                    pixiAntennaBulb.material.emissiveIntensity = 0.8 + Math.sin(time * 8) * 0.6;
+                }
+            }
+
+            camera.position.z += (targetCameraZ - camera.position.z) * 0.05;
+            camera.position.x += (targetCameraX - camera.position.x) * 0.05;
+
+            renderer.render(scene, camera);
+        }
+
+        function pulse3DMemoryCore(withSound) {
+            corePulseScale = 1.65;
+            tunnelSpeed = 0.85;
+            if (memoryTorus) {
+                const randomColors = [0x00f5d4, 0xf15bb5, 0xfee440, 0x00bbf9];
+                const chosen = randomColors[Math.floor(Math.random() * randomColors.length)];
+                memoryTorus.material.color.setHex(chosen);
+                memoryTorus.material.emissive.setHex(chosen);
+            }
+            if (withSound) playSound('pulse');
+        }
+
+        function makePixiDance(speakToo) {
+            pixiJumpTime = Math.PI;
+            playSound('success');
+            if (speakToo) {
+                characterSpeak('pixi', "Bleep bloop! My antenna is flashing! Let's remember patterns and predict the future together!");
+            }
+        }
+
+        function trigger3DFireworks() {
+            tunnelSpeed = 1.6;
+            corePulseScale = 2.1;
+            makePixiDance(false);
+            playSound('fanfare');
+            characterSpeak('spark', "Hyper-boost activated! Remember: The smartest AI doesn't just see the present—it learns from the past to prepare for the future!");
+        }
+
+        /***********************************************************************
+         * 5. STAGE NAVIGATION & INTRO DEMO LOGIC
+         ***********************************************************************/
+        const stageDialogues = [
+            { char: 'spark', text: "Welcome to the Time Tunnel of Patterns! Some AI systems don't just look at one piece of information—they remember what happened before! Click on our portraits below, or click Feed A, B, and C on the right to see how an R N N memory loop works." },
+            { char: 'spark', text: "Welcome to Game 1: Sequence Detective! Here are your instructions: Look at the pattern in the Memory Train below, remember what came before, and click the button that shows what comes next!" },
+            { char: 'spark', text: "Welcome to Part 2: The AI Memory Machine! Follow the 4 steps on your screen: First, load the sequence data in Step 1. Second, snap together the R N N brain in Step 2. Third, train the model in Step 3, and then test live predictions on the right!" },
+            { char: 'spark', text: "Welcome to Part 3: Spot the Challenge! Read the mystery scenario in the middle box and click which of the 4 challenges—Changing Patterns, Long Memories, Limited Data, or Random Events—caused the AI prediction hiccup!" },
+            { char: 'spark', text: "Welcome to the Team Luna and Pixi Innovation Lab! Pick a preset blueprint or type your own AI app idea into the four boxes. Then click Launch My 3D App Hologram so I can announce your invention!" },
+            { char: 'spark', text: "Congratulations, Certified Sequence Detective! Today you discovered how Recurrent Neural Networks learn from patterns over time. Type your name on your diploma and celebrate with a 3D Tunnel Hyper-Boost!" }
+        ];
+
+        const stageCameraTargets = [
+            { x: 0, z: 18 },
+            { x: -1.5, z: 15 },
+            { x: 1.5, z: 14 },
+            { x: -1.0, z: 16 },
+            { x: 1.2, z: 15 },
+            { x: 0, z: 13 }
+        ];
+
+        function goToStage(stageIndex) {
+            currentStageIdx = stageIndex;
+            for (let i = 0; i < 6; i++) {
+                const panel = document.getElementById('stage-' + i);
+                const btn = document.getElementById('nav-btn-' + i);
+                if (panel && btn) {
+                    if (i === stageIndex) {
+                        panel.classList.remove('hidden');
+                        panel.classList.add('grid');
+                        btn.className = "stage-pill px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-cyan-400 text-slate-950 shadow-md";
+                    } else {
+                        panel.classList.add('hidden');
+                        panel.classList.remove('grid');
+                        btn.className = "stage-pill px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-slate-800/80 text-slate-300 hover:bg-slate-700";
+                    }
+                }
+            }
+
+            targetCameraX = stageCameraTargets[stageIndex].x;
+            targetCameraZ = stageCameraTargets[stageIndex].z;
+            pulse3DMemoryCore(false);
+
+            const line = stageDialogues[stageIndex];
+            characterSpeak(line.char, line.text);
+        }
+
+        function feedIntroDemo(inputVal, memoryState, outputVal, message) {
+            document.getElementById('svg-input-val').textContent = inputVal;
+            document.getElementById('svg-memory-val').textContent = '[ ' + memoryState + ' ]';
+            document.getElementById('svg-output-val').textContent = outputVal;
+            document.getElementById('intro-demo-log').innerHTML = '✨ <strong>RNN Memory Loop Active:</strong> ' + message;
+            addStars(5);
+            characterSpeak('spark', message);
+        }
+
+        /***********************************************************************
+         * 6. STAGE 1 GAME: SEQUENCE DETECTIVE MEMORY CHALLENGE (8 PUZZLES)
+         ***********************************************************************/
+        const detectivePuzzles = [
+            {
+                title: "Mystery #1: Professor Spark's Pet Pattern",
+                subtitle: "Sequence A from our workshop! Look at the alternating pets in the memory loop:",
+                sequence: ["🐶", "🐱", "🐶", "🐱"],
+                options: ["🐶", "🐱", "🐰", "🦊"],
+                answer: "🐶",
+                char: "spark",
+                successMsg: "You remembered the pattern! Dog, Cat, Dog, Cat... so Dog comes next!"
+            },
+            {
+                title: "Mystery #2: Time Tunnel Calendar",
+                subtitle: "Sequence B: Pixi is tracking the days of the week!",
+                sequence: ["Monday", "Tuesday", "Wednesday"],
+                options: ["Sunday", "Thursday", "Friday", "Saturday"],
+                answer: "Thursday",
+                char: "pixi",
+                successMsg: "Bleep bloop! You used previous days to predict that Thursday comes next!"
+            },
+            {
+                title: "Mystery #3: Human vs RNN Alphabet Memory",
+                subtitle: "Professor Spark asks: What comes after A, B, C?",
+                sequence: ["A", "B", "C"],
+                options: ["Z", "D", "E", "A"],
+                answer: "D",
+                char: "spark",
+                successMsg: "Spot on! D comes next! You remembered previous letters—that is exactly what an RNN does!"
+            },
+            {
+                title: "Mystery #4: Luna's Sentence Predictor",
+                subtitle: "Text is a sequence of words! Which word makes the most sense at the end?",
+                sequence: ["I", "love", "eating"],
+                options: ["🍕 Pizza", "👟 Shoes", "🪨 Rocks", "☁️ Clouds"],
+                answer: "🍕 Pizza",
+                char: "luna",
+                successMsg: "Yum! Your phone keyboard uses an RNN to remember 'I love eating' and suggest Pizza!"
+            },
+            {
+                title: "Mystery #5: Luna's Weather Forecast",
+                subtitle: "The temperature is rising by 2 degrees each day! Predict tomorrow's weather:",
+                sequence: ["20°", "22°", "24°"],
+                options: ["18°", "25°", "26°", "30°"],
+                answer: "26°",
+                char: "luna",
+                successMsg: "Awesome forecasting! 20, 22, 24 leads to 26 degrees!"
+            },
+            {
+                title: "Mystery #6: Interactive Activity 2 — Counting by 2s",
+                subtitle: "Pixi is recording your number sequence answers!",
+                sequence: ["2", "4", "6", "8"],
+                options: ["9", "10", "12", "16"],
+                answer: "10",
+                char: "pixi",
+                successMsg: "10 is correct! Adding 2 each step: 2, 4, 6, 8, 10!"
+            },
+            {
+                title: "Mystery #7: Interactive Activity 2 — High-Five Jumps",
+                subtitle: "What number comes next in Professor Spark's +5 pattern?",
+                sequence: ["5", "10", "15", "20"],
+                options: ["22", "25", "30", "50"],
+                answer: "25",
+                char: "spark",
+                successMsg: "25! You mastered the +5 sequence like a true Sequence Detective!"
+            },
+            {
+                title: "Mystery #8: Musical Notes Melody",
+                subtitle: "Music is a sequence of notes in a song! Complete the scale:",
+                sequence: ["🎵 Do", "🎶 Re", "🎵 Mi"],
+                options: ["🎶 Fa", "🥁 Boom", "🎸 Zzz", "🎵 Ti"],
+                answer: "🎶 Fa",
+                char: "luna",
+                successMsg: "Bravo! Do, Re, Mi, Fa! You solved all 8 Sequence Detective mysteries!"
+            }
+        ];
+
+        let currentPuzzleIdx = 0;
+
+        function renderDetectivePuzzle() {
+            const p = detectivePuzzles[currentPuzzleIdx];
+            document.getElementById('detective-progress').textContent = (currentPuzzleIdx + 1) + ' / ' + detectivePuzzles.length;
+            document.getElementById('detective-title').textContent = p.title;
+            document.getElementById('detective-subtitle').textContent = p.subtitle;
+            document.getElementById('rnn-memory-trace').textContent = '[ ' + p.sequence.join(' ➔ ') + ' ]';
+            document.getElementById('detective-feedback').classList.add('hidden');
+
+            const trainEl = document.getElementById('sequence-train');
+            trainEl.innerHTML = '';
+            p.sequence.forEach(function(item) {
+                const card = document.createElement('div');
+                card.className = "px-4 py-3 rounded-2xl bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-cyan-400/60 text-lg sm:text-2xl font-bold text-white shadow-lg";
+                card.textContent = item;
+                trainEl.appendChild(card);
+
+                const arrow = document.createElement('span');
+                arrow.className = "text-cyan-400 font-bold text-lg";
+                arrow.textContent = "➔";
+                trainEl.appendChild(arrow);
+            });
+
+            const qBox = document.createElement('div');
+            qBox.id = "sequence-target-box";
+            qBox.className = "px-5 py-3 rounded-2xl bg-amber-500/20 border-2 border-dashed border-amber-400 text-xl sm:text-2xl font-bold text-amber-300 glow-pulse";
+            qBox.textContent = "?";
+            trainEl.appendChild(qBox);
+
+            const optsEl = document.getElementById('detective-options');
+            optsEl.innerHTML = '';
+            p.options.forEach(function(opt) {
+                const btn = document.createElement('button');
+                btn.type = "button";
+                btn.className = "btn-arcade py-3.5 px-4 rounded-2xl bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 border-2 border-cyan-400/40 font-bold text-base sm:text-lg transition";
+                btn.textContent = opt;
+                btn.onclick = function() { checkDetectiveAnswer(opt); };
+                optsEl.appendChild(btn);
+            });
+        }
+
+        function checkDetectiveAnswer(selected) {
+            const p = detectivePuzzles[currentPuzzleIdx];
+            const fb = document.getElementById('detective-feedback');
+            const fbText = document.getElementById('detective-feedback-text');
+            const targetBox = document.getElementById('sequence-target-box');
+
+            fb.classList.remove('hidden');
+            if (selected === p.answer) {
+                targetBox.textContent = selected;
+                targetBox.className = "px-5 py-3 rounded-2xl bg-emerald-500/30 border-2 border-emerald-400 text-xl sm:text-2xl font-bold text-emerald-300";
+                fb.className = "mt-4 p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-400 text-emerald-200 text-sm font-semibold flex items-center justify-between gap-3";
+                fbText.innerHTML = '✅ <strong>Correct (+15 ⭐):</strong> ' + p.successMsg;
+                playSound('success');
+                addStars(15);
+                characterSpeak(p.char, p.successMsg);
+            } else {
+                fb.className = "mt-4 p-3.5 rounded-2xl bg-rose-950/80 border border-rose-400 text-rose-200 text-sm font-semibold flex items-center justify-between gap-3";
+                fbText.innerHTML = '🤔 <strong>Not quite!</strong> Look closely at the memory trace: <em>' + p.sequence.join(' ➔ ') + '</em> and try again!';
+                playSound('error');
+                characterSpeak('pixi', "Oops! Check the previous clues in the memory loop and try another button!");
+            }
+        }
+
+        function nextDetectivePuzzle() {
+            currentPuzzleIdx = (currentPuzzleIdx + 1) % detectivePuzzles.length;
+            renderDetectivePuzzle();
+            playSound('click');
+            speakDetectiveInstruction();
+        }
+
+        /***********************************************************************
+         * 7. STAGE 2 GAME: TENSORFLOW LITE AI MEMORY MACHINE
+         ***********************************************************************/
+        let modelTrained = false;
+
+        function completeTFStep1() {
+            document.getElementById('step1-badge').textContent = "✅ Loaded";
+            document.getElementById('step1-badge').className = "text-xs px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300";
+            document.getElementById('code-line-1').classList.remove('opacity-40');
+            document.getElementById('code-status').textContent = "Step 1 Complete: Sequences Loaded!";
+
+            const card2 = document.getElementById('tf-card-2');
+            card2.classList.remove('opacity-75', 'border-slate-700');
+            card2.classList.add('border-purple-400');
+            document.getElementById('btn-tf-step2').disabled = false;
+            document.getElementById('step2-badge').textContent = "Ready";
+
+            addStars(15);
+            playSound('success');
+            characterSpeak('spark', "Step 1 complete! We fed our training sequences 1, 2, 3 predicts 4, and 2, 3, 4 predicts 5 into TensorFlow Lite. Now snap together the R N N Brain in Step 2!");
+        }
+
+        function completeTFStep2() {
+            document.getElementById('step2-badge').textContent = "✅ Built";
+            document.getElementById('step2-badge').className = "text-xs px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300";
+            document.getElementById('code-line-2').classList.remove('opacity-40');
+            document.getElementById('code-status').textContent = "Step 2 Complete: RNN Memory Cell Connected!";
+
+            const card3 = document.getElementById('tf-card-3');
+            card3.classList.remove('opacity-75', 'border-slate-700');
+            card3.classList.add('border-amber-400');
+            document.getElementById('btn-tf-step3').disabled = false;
+            document.getElementById('step3-badge').textContent = "Ready";
+
+            addStars(15);
+            playSound('success');
+            characterSpeak('pixi', "Step 2 complete! Input flows into Memory, and Memory flows into Prediction! Now click Train AI Brain in Step 3!");
+        }
+
+        function completeTFStep3() {
+            const btn3 = document.getElementById('btn-tf-step3');
+            btn3.disabled = true;
+            document.getElementById('code-line-3').classList.remove('opacity-40');
+            document.getElementById('code-status').textContent = "Training RNN on sequence patterns...";
+
+            let progress = 0;
+            const bar = document.getElementById('train-progress-bar');
+            const pct = document.getElementById('train-percent');
+
+            const interval = setInterval(function() {
+                progress += 20;
+                bar.style.width = progress + '%';
+                pct.textContent = progress + '% Trained';
+                pulse3DMemoryCore(true);
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    modelTrained = true;
+                    document.getElementById('step3-badge').textContent = "✅ 99% Smart";
+                    document.getElementById('step3-badge').className = "text-xs px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300";
+                    document.getElementById('code-line-4').classList.remove('opacity-40');
+                    document.getElementById('code-status').textContent = "✅ RNN Trained & Ready for Live Predictions!";
+
+                    const pill = document.getElementById('machine-online-pill');
+                    pill.textContent = "🟢 RNN Model Online!";
+                    pill.className = "text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-200 border border-emerald-400/50";
+
+                    addStars(25);
+                    playSound('fanfare');
+                    runMachinePrediction([8, 9, 10], '11', 'Step 4 Demo: We fed 8, 9, 10 and the trained RNN predicted 11!');
+                }
+            }, 240);
+        }
+
+        function runMachinePrediction(seqArray, predictedValue, explanation) {
+            document.getElementById('machine-big-output').textContent = predictedValue;
+            document.getElementById('machine-explanation').innerHTML = 'Input: <strong>[' + seqArray.join(', ') + ']</strong> ➔ ' + explanation;
+            addStars(10);
+            playSound('success');
+            characterSpeak('spark', explanation);
+        }
+
+        function runTrickySequence() {
+            document.getElementById('machine-big-output').textContent = "31.8";
+            const msg = "In 2, 4, 8, 16, humans know the exact doubling rule is 32! But an R N N might predict 31.8 because AI predicts based on statistical probability, not 100 percent certainty!";
+            document.getElementById('machine-explanation').innerHTML = '🎲 <strong>Probability Lesson:</strong> Humans say <strong>32</strong>, AI says <strong>31.8</strong>! AI uses probability!';
+            addStars(20);
+            playSound('pulse');
+            characterSpeak('spark', msg);
+        }
+
+        function predictCustomNumbers() {
+            const n1 = parseFloat(document.getElementById('custom-n1').value) || 0;
+            const n2 = parseFloat(document.getElementById('custom-n2').value) || 0;
+            const n3 = parseFloat(document.getElementById('custom-n3').value) || 0;
+
+            const step1 = n2 - n1;
+            const step2 = n3 - n2;
+            let nextVal;
+            let ruleDesc;
+
+            if (Math.abs(step1 - step2) < 0.001) {
+                nextVal = n3 + step1;
+                ruleDesc = "Your RNN spotted a steady step of " + (step1 >= 0 ? "+" + step1 : step1) + " and predicted " + nextVal + "!";
+            } else if (n1 !== 0 && n2 !== 0 && Math.abs((n2 / n1) - (n3 / n2)) < 0.01) {
+                const ratio = n2 / n1;
+                nextVal = (n3 * ratio).toFixed(1);
+                ruleDesc = "Multiplying pattern! Probability estimate: " + nextVal + "!";
+            } else {
+                const avgStep = (step1 + step2) / 2;
+                nextVal = (n3 + avgStep).toFixed(1);
+                ruleDesc = "Tricky custom pattern! Based on probability, the RNN estimates " + nextVal + "!";
+            }
+
+            runMachinePrediction([n1, n2, n3], nextVal, ruleDesc);
+        }
+
+        /***********************************************************************
+         * 8. STAGE 3 GAME: SPOT THE CHALLENGE! (4 SCENARIOS)
+         ***********************************************************************/
+        const challengeScenarios = [
+            {
+                emoji: "⛈️",
+                title: "Mystery #1: A Storm Appears Suddenly!",
+                desc: "The weather was warm and sunny (22°, 23°, 24°, 25°), so the AI predicted 26°—but suddenly a surprise thunderstorm rolled in! Which challenge is this?",
+                answer: "Changing Pattern",
+                explanation: "Spot on! A sudden storm is a Changing Pattern—the weather switched rules without warning!"
+            },
+            {
+                emoji: "📉",
+                title: "Mystery #2: Only 3 Days of Clues!",
+                desc: "We tried to train a year-round weather AI, but we only gave it 3 days of data points! Why did its prediction fail?",
+                answer: "Limited Data",
+                explanation: "Correct! Only 3 data points is Limited Data. AI needs lots of examples to learn reliable patterns!"
+            },
+            {
+                emoji: "🚗",
+                title: "Mystery #3: Unexpected Traffic Accident!",
+                desc: "Main Street is usually empty at 2:00 PM, so the AI predicted smooth driving—but a sudden fender-bender blocked the road! What happened?",
+                answer: "Random Event",
+                explanation: "Exactly! A sudden traffic accident is a Random Event that doesn't follow past sequences!"
+            },
+            {
+                emoji: "📖",
+                title: "Mystery #4: The 500-Page Story Book!",
+                desc: "An AI is reading a giant mystery novel and forgets the secret villain's name mentioned way back on Page 1! Which challenge is this?",
+                answer: "Long Memory",
+                explanation: "Brilliant! Remembering clues from way back in a long story is the Long Memory challenge!"
+            }
+        ];
+
+        let currentChallengeIdx = 0;
+
+        function renderChallengeScenario() {
+            const c = challengeScenarios[currentChallengeIdx];
+            document.getElementById('challenge-progress').textContent = 'Scenario ' + (currentChallengeIdx + 1) + ' / ' + challengeScenarios.length;
+            document.getElementById('challenge-emoji').textContent = c.emoji;
+            document.getElementById('challenge-scenario-title').textContent = c.title;
+            document.getElementById('challenge-scenario-desc').textContent = c.desc;
+            document.getElementById('challenge-feedback').classList.add('hidden');
+        }
+
+        function checkChallengeAnswer(chosen) {
+            const c = challengeScenarios[currentChallengeIdx];
+            const fb = document.getElementById('challenge-feedback');
+            const fbText = document.getElementById('challenge-feedback-text');
+            fb.classList.remove('hidden');
+
+            if (chosen === c.answer) {
+                fb.className = "mt-4 p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-400 text-emerald-200 text-sm font-semibold flex items-center justify-between gap-3";
+                fbText.innerHTML = '✅ <strong>+20 ⭐ ' + c.answer + ':</strong> ' + c.explanation;
+                addStars(20);
+                playSound('success');
+                characterSpeak('luna', c.explanation);
+            } else {
+                fb.className = "mt-4 p-3.5 rounded-2xl bg-rose-950/80 border border-rose-400 text-rose-200 text-sm font-semibold flex items-center justify-between gap-3";
+                fbText.innerHTML = '🤔 Not quite! Check Pixi\'s Field Guide on the right and try another challenge card!';
+                playSound('error');
+                characterSpeak('pixi', "Hmm, check my Field Guide on the right! Which challenge matches this scenario?");
+            }
+        }
+
+        function nextChallengeScenario() {
+            currentChallengeIdx = (currentChallengeIdx + 1) % challengeScenarios.length;
+            renderChallengeScenario();
+            playSound('click');
+            speakChallengeInstruction();
+        }
+
+        /***********************************************************************
+         * 9. STAGE 4: AI INVENTOR STUDIO & HOMEWORK SENTENCE BUILDER
+         ***********************************************************************/
+        function loadAppPreset(name, seq, pred, users, benefit) {
+            document.getElementById('app-name').value = name;
+            document.getElementById('app-sequence').value = seq;
+            document.getElementById('app-prediction').value = pred;
+            document.getElementById('app-benefit').value = users + ' — ' + benefit;
+            updateLiveBlueprint();
+            playSound('click');
+            characterSpeak('luna', "Loaded blueprint for " + name + "! Click Launch My 3D App Hologram to test it!");
+        }
+
+        function updateLiveBlueprint() {
+            const name = document.getElementById('app-name').value || "My Smart RNN App";
+            const seq = document.getElementById('app-sequence').value || "past patterns";
+            const pred = document.getElementById('app-prediction').value || "what happens next";
+            const ben = document.getElementById('app-benefit').value || "everyone in everyday life";
+
+            document.getElementById('preview-app-name').textContent = name;
+            document.getElementById('preview-app-seq').textContent = seq;
+            document.getElementById('preview-app-pred').textContent = pred;
+            document.getElementById('preview-app-ben').textContent = ben;
+
+            const pitchHTML = '"My AI remembers <span class="text-cyan-300 font-bold">' + seq + '</span> so it can predict <span class="text-pink-300 font-bold">' + pred + '</span> and help <span class="text-emerald-300 font-bold">' + ben + '</span>."';
+            document.getElementById('homework-pitch').innerHTML = pitchHTML;
+
+            document.getElementById('cert-app').textContent = name;
+            document.getElementById('cert-pitch-summary').textContent = '"My AI remembers ' + seq + ' so it can predict ' + pred + ' and help ' + ben + '."';
+        }
+
+        function launch3DAppHologram() {
+            updateLiveBlueprint();
+            const name = document.getElementById('app-name').value;
+            const seq = document.getElementById('app-sequence').value;
+            const pred = document.getElementById('app-prediction').value;
+            const ben = document.getElementById('app-benefit').value;
+
+            const card = document.getElementById('hologram-card');
+            card.classList.add('glow-pulse');
+
+            addStars(30);
+            playSound('fanfare');
+            characterSpeak('spark', "Incredible invention! " + name + "! Your AI remembers " + seq + " so it can predict " + pred + " and help " + ben + "!");
+        }
+
+        function copyCertificateSummary() {
+            const student = document.getElementById('student-name-input').value || "Future AI Inventor";
+            const appName = document.getElementById('app-name').value;
+            const pitch = document.getElementById('cert-pitch-summary').textContent;
+            const summary = "🏅 Mastix ED Lesson 14 Diploma — Certified RNN Sequence Detective: " + student + " | Stars: ⭐ " + sparkStars + " | App Invention: " + appName + " | Homework Pitch: " + pitch;
+
+            const tempInput = document.createElement('textarea');
+            tempInput.value = summary;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            const toast = document.getElementById('copy-toast');
+            toast.classList.remove('hidden');
+            playSound('success');
+            setTimeout(function() { toast.classList.add('hidden'); }, 4000);
+        }
+
+        /***********************************************************************
+         * 10. INITIALIZE EVERYTHING SAFELY ON DOM READY & WINDOW LOAD
+         ***********************************************************************/
+        let appInitialized = false;
+        function initWorkshopApp() {
+            if (appInitialized) return;
+            appInitialized = true;
+            loadVoices();
+            renderDetectivePuzzle();
+            renderChallengeScenario();
+            updateLiveBlueprint();
+            initThreeJS();
+            animateThreeJS();
+        }
+
+        document.addEventListener('DOMContentLoaded', initWorkshopApp);
+        window.addEventListener('load', initWorkshopApp);
+    </script>
+</body>
+</html>
